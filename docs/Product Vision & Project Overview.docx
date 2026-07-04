@@ -1,0 +1,176 @@
+Product Vision & Project Overview
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Introduction
+
+PrepFlow is a modern learning platform designed to help Class 11, Class 12, and MHT CET students prepare in a structured, organized, and distraction-free way.
+
+Instead of spending hours searching for YouTube videos, notes, formula sheets, and previous year questions across multiple platforms, students will find everything in one organized place.
+
+PrepFlow focuses on reducing confusion, saving time, and making learning structured through chapter-wise learning paths and progress tracking.
+
+The platform is not another coaching website or content platform. It is a preparation operating system that organizes existing learning resources into a clean, trackable, and student-friendly experience.
+
+2. Problem Statement
+
+Students preparing for MHT CET often depend on free resources available on YouTube and other platforms.
+
+Although high-quality resources exist, students face several challenges during preparation.
+
+Common problems include:
+
+Incomplete YouTube playlists
+Different teachers following different teaching sequences
+Resources scattered across multiple platforms
+Difficulty finding trusted study material
+No proper chapter-wise organization
+No centralized progress tracking
+Time wasted searching instead of studying
+Difficulty revising completed chapters
+Lack of structured learning roadmap
+
+Students often spend more time searching than actually studying.
+
+3. Proposed Solution
+
+PrepFlow solves these problems by providing a centralized platform where students can access carefully organized learning resources chapter-wise.
+
+Each chapter contains all required learning resources including playlists, notes, formula sheets, previous year questions, and other study material.
+
+Students can track their progress resource-by-resource, chapter-by-chapter, subject-by-subject, and overall.
+
+The platform removes decision fatigue by always guiding students towards the next step in their preparation journey.
+
+4. Vision
+
+To build the most organized and student-friendly preparation platform that helps students study efficiently without wasting time searching for resources.
+
+5. Mission
+
+To simplify the preparation journey by organizing quality learning resources into a structured roadmap that saves time, improves consistency, and increases productivity.
+
+6. Target Users
+
+Primary Users
+
+Class 11 Students
+Class 12 Students
+MHT CET Aspirants
+
+Future Expansion
+
+JEE Aspirants
+NEET Aspirants
+Competitive Exam Students
+School Students
+7. Core Philosophy
+
+Student Philosophy
+
+Do not make students search.
+
+Make them study.
+
+Admin Philosophy
+
+Do not make administrators write code.
+
+Make them manage content.
+
+Platform Philosophy
+
+Every click should reduce confusion.
+
+Every screen should help students understand what to study next.
+
+8. Primary Goals
+
+The primary goals of PrepFlow are:
+
+Organize study resources chapter-wise
+Save students' preparation time
+Reduce decision fatigue
+Improve learning consistency
+Track learning progress
+Provide a structured preparation roadmap
+Create a clean and distraction-free study experience
+9. Product Principles
+
+PrepFlow follows these principles throughout development.
+
+Principle 1
+
+Students should know what to study within three seconds of opening the platform.
+
+Principle 2
+
+Everything should be organized.
+
+Principle 3
+
+Everything should be trackable.
+
+Principle 4
+
+Everything should be simple.
+
+Principle 5
+
+Learning should never feel confusing.
+
+10. Platform Identity
+
+PrepFlow is not:
+
+A coaching platform
+A YouTube alternative
+A note-sharing website
+A learning management system
+
+PrepFlow is:
+
+A structured preparation platform
+A study operating system
+A learning roadmap
+A centralized resource management platform for students
+11. Long-Term Vision
+
+The first version of PrepFlow focuses on structured learning and resource organization.
+
+Future versions will include:
+
+AI-powered study planner
+Battle Mode
+Live Leaderboards
+Revision Planner
+Mock Tests
+Community Features
+AI Learning Assistant
+Personalized Recommendations
+12. Success Criteria
+
+PrepFlow will be considered successful when students:
+
+Spend less time searching for resources
+Study more consistently
+Complete chapters in an organized manner
+Track their progress easily
+Return to the platform daily
+13. Project Motto
+
+Stop Searching. Start Studying.
+
+14. Closing Statement
+
+PrepFlow is designed with one simple objective:
+
+Help students spend less time searching and more time learning.
+
+Every feature, every screen, every interaction, and every future update will follow this philosophy.
+
+The platform aims to become a complete preparation operating system where students can organize, track, and complete their learning journey efficiently.

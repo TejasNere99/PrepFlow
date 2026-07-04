@@ -1,0 +1,637 @@
+PrepFlow
+User Flow & Application Workflow
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+This document defines how users interact with PrepFlow from the moment they open the application until they complete their learning journey.
+
+The objective is to ensure a smooth, intuitive, and distraction-free experience for both students and administrators.
+
+2. User Types
+
+The platform currently supports two user roles:
+
+Student
+Administrator
+
+Each user follows a different workflow.
+
+3. Student Journey
+
+Student opens PrepFlow
+
+↓
+
+Dashboard
+
+↓
+
+Select Subject
+
+↓
+
+Select Chapter
+
+↓
+
+Open Resource
+
+↓
+
+Complete Resource
+
+↓
+
+Progress Updates
+
+↓
+
+Continue Next Resource
+
+↓
+
+Complete Chapter
+
+↓
+
+Complete Subject
+
+↓
+
+Complete Overall Learning Journey
+
+4. Student Dashboard Flow
+
+When the student opens PrepFlow, the dashboard should immediately display:
+
+Overall Progress
+Continue Learning
+Subject Cards
+Search
+Analytics
+Recently Opened Chapters
+
+The student should immediately understand where to continue.
+
+5. Subject Flow
+
+Student selects a subject.
+
+The system displays:
+
+Subject Progress
+Chapter List
+Search Within Subject
+
+Each chapter card should show:
+
+Chapter Name
+Progress
+Completed Resources
+Continue Button
+6. Chapter Flow
+
+Student opens a chapter.
+
+The chapter page displays:
+
+Chapter Information
+Progress
+Learning Checklist
+Resources
+
+Each resource appears as an independent item.
+
+7. Resource Flow
+
+Student selects a resource.
+
+↓
+
+Resource opens.
+
+↓
+
+Student studies.
+
+↓
+
+Student marks resource as completed.
+
+↓
+
+Progress updates automatically.
+
+↓
+
+Student returns to chapter.
+
+↓
+
+Next recommended resource is highlighted.
+
+8. Progress Flow
+
+Resource Completed
+
+↓
+
+Chapter Progress Updated
+
+↓
+
+Subject Progress Updated
+
+↓
+
+Overall Progress Updated
+
+↓
+
+Dashboard Analytics Updated
+
+The student should never manually calculate progress.
+
+9. Search Flow
+
+Student opens search.
+
+↓
+
+Searches:
+
+Subject
+
+Chapter
+
+Resource
+
+↓
+
+Results displayed instantly.
+
+↓
+
+Student opens desired content.
+
+10. Analytics Flow
+
+Dashboard Analytics display:
+
+Overall Completion
+
+↓
+
+Subject Completion
+
+↓
+
+Chapter Completion
+
+↓
+
+Learning Progress
+
+Analytics update automatically after every completed resource.
+
+11. Continue Learning Flow
+
+When returning to PrepFlow:
+
+Dashboard
+
+↓
+
+Continue Learning
+
+↓
+
+Previously Opened Chapter
+
+↓
+
+Previously Incomplete Resource
+
+↓
+
+Resume Learning
+
+Students should never search for where they stopped.
+
+12. Admin Journey
+
+Administrator
+
+↓
+
+Login
+
+↓
+
+Dashboard
+
+↓
+
+Manage Content
+
+↓
+
+Publish
+
+↓
+
+Students View Updated Content
+
+No deployment should be required.
+
+13. Admin Dashboard Flow
+
+After login, the administrator should see:
+
+Total Subjects
+Total Chapters
+Total Resources
+Draft Content
+Published Content
+Recent Updates
+14. Subject Management Flow
+
+Dashboard
+
+↓
+
+Subjects
+
+↓
+
+Create Subject
+
+↓
+
+Fill Information
+
+↓
+
+Save
+
+↓
+
+Subject Available
+
+15. Chapter Management Flow
+
+Dashboard
+
+↓
+
+Subject
+
+↓
+
+Create Chapter
+
+↓
+
+Fill Details
+
+↓
+
+Save
+
+↓
+
+Chapter Created
+
+16. Resource Management Flow
+
+Dashboard
+
+↓
+
+Subject
+
+↓
+
+Chapter
+
+↓
+
+Add Resource
+
+↓
+
+Select Resource Type
+
+↓
+
+Enter Information
+
+↓
+
+Upload File or Paste URL
+
+↓
+
+Save
+
+↓
+
+Resource Published
+
+17. File Upload Flow
+
+Administrator
+
+↓
+
+Choose File
+
+↓
+
+Upload
+
+↓
+
+Supabase Storage
+
+↓
+
+Generate URL
+
+↓
+
+Store URL in MongoDB
+
+↓
+
+Resource Ready
+
+The administrator should never manually copy file URLs.
+
+18. Metadata Flow
+
+Administrator
+
+↓
+
+Open Resource
+
+↓
+
+Add Metadata
+
+↓
+
+Save
+
+↓
+
+Frontend Automatically Displays Metadata
+
+No frontend modification required.
+
+19. Tags Flow
+
+Administrator
+
+↓
+
+Create Tag
+
+↓
+
+Assign Tag
+
+↓
+
+Save
+
+↓
+
+Students View Tag
+
+Tags remain reusable across the platform.
+
+20. Visibility Flow
+
+Administrator
+
+↓
+
+Select Item
+
+↓
+
+Change Status
+
+Draft
+
+Published
+
+Hidden
+
+↓
+
+Save
+
+↓
+
+Student View Updates Automatically
+
+21. Ordering Flow
+
+Administrator
+
+↓
+
+Drag Resource
+
+↓
+
+Drop
+
+↓
+
+Save
+
+↓
+
+Students See Updated Order
+
+22. Future Battle Mode Flow
+
+Student
+
+↓
+
+Complete Chapter
+
+↓
+
+Battle Recommendation
+
+↓
+
+Join Battle
+
+↓
+
+Matchmaking
+
+↓
+
+Battle
+
+↓
+
+Leaderboard
+
+↓
+
+Rating Updated
+
+23. Future Planner Flow
+
+Student
+
+↓
+
+Select Goal
+
+↓
+
+Planner Generates Schedule
+
+↓
+
+Daily Tasks
+
+↓
+
+Complete Tasks
+
+↓
+
+Progress Updated
+
+24. Future AI Flow
+
+Student
+
+↓
+
+Study History
+
+↓
+
+AI Analysis
+
+↓
+
+Weak Chapters
+
+↓
+
+Recommended Resources
+
+↓
+
+Continue Learning
+
+25. Error Flow
+
+Whenever an error occurs:
+
+Display meaningful message.
+
+Allow retry.
+
+Never display technical errors to students.
+
+26. Empty State Flow
+
+Whenever no content exists:
+
+Display informative message.
+
+Examples:
+
+"No Resources Available"
+
+"No Notes Uploaded"
+
+"Chapter Coming Soon"
+
+27. Success Flow
+
+Every completed action should provide immediate feedback.
+
+Examples:
+
+Resource Completed
+
+Progress Updated
+
+Chapter Completed
+
+Subject Completed
+
+Animations should remain subtle.
+
+28. User Experience Principles
+
+Students should never feel lost.
+
+Students should never search unnecessarily.
+
+Students should never wonder what to study next.
+
+Administrators should never modify code.
+
+Administrators should never edit the database manually.
+
+29. Final Workflow Philosophy
+
+Students
+
+Learn
+
+↓
+
+Complete
+
+↓
+
+Track
+
+↓
+
+Repeat
+
+Administrators
+
+Create
+
+↓
+
+Manage
+
+↓
+
+Publish
+
+↓
+
+Improve
+
+30. Final Statement
+
+Every workflow inside PrepFlow is designed around simplicity.
+
+The application should guide students through their learning journey while allowing administrators to continuously improve the platform without software development.

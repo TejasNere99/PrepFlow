@@ -1,0 +1,500 @@
+PrepFlow
+Database Design Document
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+This document defines the database architecture of PrepFlow.
+
+The database is designed to be completely dynamic, scalable, and future-ready.
+
+The primary objective is to ensure that administrators can manage platform content without modifying application source code.
+
+2. Database Philosophy
+
+PrepFlow follows a data-driven architecture.
+
+The frontend should never contain hardcoded learning resources.
+
+All platform content must come from the database.
+
+If tomorrow a new resource, tag, metadata field, or chapter is added, no frontend code should require modification.
+
+3. Database Technology
+
+Database
+
+MongoDB Atlas
+
+File Storage
+
+Supabase Storage
+
+Authentication
+
+(Admin V1)
+
+Future
+
+Student Authentication
+
+4. Collections
+
+The platform initially contains the following collections.
+
+Users
+Subjects
+Chapters
+Resources
+Progress
+Tags
+Resource Types
+
+Future collections may be added without affecting the existing architecture.
+
+5. Users Collection
+
+Stores all user information.
+
+Example fields:
+
+Name
+Email
+Role
+Profile Image
+Created Date
+Last Login
+
+Roles:
+
+Student
+
+Administrator
+
+Future:
+
+Moderator
+
+6. Subjects Collection
+
+Each document represents one subject.
+
+Example:
+
+Physics
+
+Mathematics
+
+Chemistry
+
+Each subject contains:
+
+Name
+Description
+Display Order
+Status
+Icon
+Color (Optional)
+Metadata
+7. Chapters Collection
+
+Every chapter belongs to one subject.
+
+Each chapter contains:
+
+Subject ID
+Chapter Name
+Description
+Display Order
+Status
+Metadata
+Tags
+
+The chapter should NOT directly store resources.
+
+Resources are stored separately.
+
+8. Resources Collection
+
+Every learning resource belongs to one chapter.
+
+Examples:
+
+Playlist
+
+Notes
+
+Formula Sheet
+
+PYQs
+
+Future:
+
+Quiz
+
+Mind Map
+
+Mock Test
+
+Flashcards
+
+Assignments
+
+Books
+
+Each resource contains:
+
+Chapter ID
+Resource Type
+Title
+Description
+URL
+Display Order
+Visibility
+Metadata
+Tags
+9. Progress Collection
+
+Stores learning progress.
+
+Each document contains:
+
+User ID
+Resource ID
+Completion Status
+Completed At
+Last Updated
+
+Chapter progress should never be stored manually.
+
+It should always be calculated.
+
+10. Tags Collection
+
+Tags are dynamic.
+
+Administrators can create unlimited tags.
+
+Examples:
+
+High Weightage
+
+Important
+
+Beginner
+
+Conceptual
+
+Revision
+
+Scoring
+
+The frontend should never hardcode tags.
+
+11. Resource Types Collection
+
+Resource types should also be dynamic.
+
+Default examples:
+
+Playlist
+
+Notes
+
+Formula Sheet
+
+PYQs
+
+Future:
+
+Quiz
+
+Assignment
+
+Mock Test
+
+Mind Map
+
+Flashcards
+
+Administrators should be able to create future resource types.
+
+12. Metadata Philosophy
+
+Metadata should remain completely dynamic.
+
+Nothing should be fixed.
+
+Example metadata:
+
+Estimated Time
+
+Difficulty
+
+Teacher
+
+Language
+
+Importance
+
+Batch
+
+Expected Questions
+
+Future metadata should require zero code changes.
+
+13. Relationships
+
+Subject
+
+↓
+
+Multiple Chapters
+
+↓
+
+Multiple Resources
+
+↓
+
+Student Progress
+
+Resources should never be embedded inside chapter documents.
+
+Instead, they should be linked using IDs.
+
+14. File Storage
+
+Only metadata is stored inside MongoDB.
+
+Actual files remain inside Supabase Storage.
+
+MongoDB stores:
+
+Title
+
+File URL
+
+Resource Information
+
+Supabase stores:
+
+PDF
+
+Images
+
+Documents
+
+Formula Sheets
+
+15. Progress Calculation
+
+Progress should always be calculated.
+
+Resource Completion
+
+↓
+
+Chapter Completion
+
+↓
+
+Subject Completion
+
+↓
+
+Overall Completion
+
+The database should never manually store duplicate progress values.
+
+16. Visibility
+
+Every document should support visibility.
+
+Draft
+
+Published
+
+Hidden
+
+Students only receive Published content.
+
+17. Ordering
+
+Everything displayed on the platform should support ordering.
+
+Subjects
+
+Chapters
+
+Resources
+
+Tags
+
+Future modules
+
+Administrators should change ordering without code changes.
+
+18. Search Support
+
+The database should support searching by:
+
+Subject Name
+
+Chapter Name
+
+Resource Name
+
+Tags
+
+Teacher
+
+Future metadata
+
+19. Scalability
+
+The architecture should support:
+
+Unlimited Chapters
+
+Unlimited Resources
+
+Unlimited Metadata Fields
+
+Unlimited Tags
+
+Unlimited Resource Types
+
+Additional Exams
+
+Additional Subjects
+
+Future AI Modules
+
+20. Admin CMS Integration
+
+Every collection should be editable through the Admin CMS.
+
+No database editing tools should be required.
+
+Administrators should never open MongoDB Atlas to update platform content.
+
+21. Soft Delete
+
+Documents should not be permanently deleted immediately.
+
+Instead, they should be marked as deleted.
+
+This allows future recovery.
+
+22. Audit Information
+
+Every document should maintain:
+
+Created By
+
+Created At
+
+Updated By
+
+Updated At
+
+This helps administrators track changes.
+
+23. Dynamic Rendering
+
+The frontend should render whatever data the backend provides.
+
+The frontend should never assume:
+
+Fixed Tags
+
+Fixed Metadata
+
+Fixed Resource Types
+
+Fixed Resource Count
+
+Everything should remain dynamic.
+
+24. Database Principles
+
+The database should be:
+
+Simple
+
+Normalized
+
+Flexible
+
+Scalable
+
+Maintainable
+
+Future Ready
+
+25. Golden Rules
+Rule 1
+
+Never hardcode content.
+
+Rule 2
+
+Never hardcode metadata.
+
+Rule 3
+
+Never hardcode tags.
+
+Rule 4
+
+Never hardcode resource types.
+
+Rule 5
+
+Never upload files directly into MongoDB.
+
+Rule 6
+
+Store only URLs inside MongoDB.
+
+Rule 7
+
+All content updates must happen through the Admin CMS.
+
+Rule 8
+
+Every new feature should fit into the existing architecture.
+
+26. Future Expansion
+
+The same database should support:
+
+Battle Mode
+
+Leaderboard
+
+Planner
+
+Bookmarks
+
+AI Recommendations
+
+Community Discussions
+
+Daily Challenges
+
+Mock Tests
+
+without redesigning the database.
+
+27. Final Database Statement
+
+The PrepFlow database is designed to ensure that the application grows through content, not through code changes.
+
+The architecture prioritizes flexibility, maintainability, and long-term scalability while keeping administration simple and efficient.

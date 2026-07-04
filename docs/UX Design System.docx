@@ -1,0 +1,482 @@
+PrepFlow
+UI / UX Design System
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+This document defines the complete design system for PrepFlow.
+
+The purpose of this document is to ensure visual consistency across the entire platform.
+
+Every page, card, button, progress bar, color, spacing, and interaction should follow the same design language.
+
+2. Design Philosophy
+
+PrepFlow is designed around one simple principle:
+
+Students should spend their time studying, not understanding the interface.
+
+The interface should always feel:
+
+Clean
+Modern
+Professional
+Minimal
+Organized
+Fast
+Distraction Free
+3. User Experience Goals
+
+The platform should help students:
+
+Understand where they are
+Understand what they have completed
+Understand what they should study next
+Navigate without confusion
+
+Every screen should answer only one question.
+
+4. Design Principles
+Principle 1
+
+Reduce cognitive load.
+
+Principle 2
+
+Reduce clicks.
+
+Principle 3
+
+Reduce searching.
+
+Principle 4
+
+Show progress everywhere.
+
+Principle 5
+
+Consistency over creativity.
+
+Principle 6
+
+Every screen should feel familiar.
+
+5. Theme
+
+PrepFlow will use a modern dark theme.
+
+The interface should look premium while remaining easy to read during long study sessions.
+
+6. Color Palette
+
+Primary Background
+
+Dark
+
+Secondary Background
+
+Slightly lighter than the primary background
+
+Card Background
+
+Elevated dark surface
+
+Primary Accent
+
+Orange
+
+Success
+
+Green
+
+Warning
+
+Yellow
+
+Error
+
+Red
+
+Text
+
+White
+
+Secondary Text
+
+Light Gray
+
+Borders
+
+Subtle Gray
+
+The platform should avoid excessive colors.
+
+Only meaningful colors should be used.
+
+7. Typography
+
+Use clean sans-serif typography.
+
+Font hierarchy:
+
+Heading
+
+Sub Heading
+
+Body
+
+Caption
+
+Only three font weights should be used.
+
+Avoid decorative fonts.
+
+8. Spacing System
+
+The interface should maintain consistent spacing throughout the application.
+
+Cards, buttons, sections and lists should follow a fixed spacing system.
+
+No random padding or margins should exist.
+
+9. Navigation Philosophy
+
+Navigation should always remain shallow.
+
+Students should never navigate through deeply nested menus.
+
+Ideal Navigation
+
+Dashboard
+
+↓
+
+Subject
+
+↓
+
+Chapter
+
+↓
+
+Resources
+
+No additional navigation levels should be introduced.
+
+10. Dashboard Design
+
+Dashboard should immediately show:
+
+Overall Progress
+
+Continue Learning
+
+Subject Cards
+
+Recent Chapters
+
+Search
+
+Analytics
+
+Students should know what to do immediately after opening the application.
+
+11. Subject Page
+
+Each subject contains multiple chapter cards.
+
+Each chapter card displays:
+
+Chapter Name
+Progress Bar
+Completed Resources
+Continue Button
+Optional Metadata
+Optional Tags
+
+Cards should remain clean and uncluttered.
+
+12. Chapter Page
+
+The chapter page should display:
+
+Chapter Information
+
+↓
+
+Progress
+
+↓
+
+Learning Checklist
+
+↓
+
+Resources
+
+The interface should encourage sequential learning.
+
+13. Resource Card
+
+Every resource should have its own card.
+
+Each resource card contains:
+
+Completion Checkbox
+
+Title
+
+Description
+
+Open Button
+
+Optional Metadata
+
+Students should never scroll through unnecessary information.
+
+14. Progress System
+
+Progress should exist at four levels.
+
+Resource Progress
+
+↓
+
+Chapter Progress
+
+↓
+
+Subject Progress
+
+↓
+
+Overall Progress
+
+Progress should update automatically.
+
+15. Analytics
+
+The dashboard should display:
+
+Linear Progress Bar
+
+Circular Progress Indicator
+
+Subject-wise Progress
+
+Chapter Completion Summary
+
+Analytics should remain simple.
+
+The platform is not a data analytics application.
+
+16. Icons
+
+Icons should be minimal.
+
+Examples:
+
+Playlist
+
+Notes
+
+Formula Sheet
+
+PYQs
+
+Practice
+
+Completed
+
+Bookmark
+
+Search
+
+Settings
+
+Icons should always improve understanding.
+
+Icons should never become decoration.
+
+17. Buttons
+
+Buttons should have clear purposes.
+
+Primary Button
+
+Main Action
+
+Secondary Button
+
+Alternative Action
+
+Danger Button
+
+Delete
+
+Disabled Button
+
+Unavailable
+
+The number of button styles should remain limited.
+
+18. Cards
+
+Cards are the primary UI component.
+
+Every important piece of information should be displayed inside a card.
+
+Cards should contain:
+
+Title
+
+Content
+
+Actions
+
+Status
+
+Optional Metadata
+
+Cards should follow consistent spacing and alignment.
+
+19. Status Indicators
+
+Status should be communicated visually.
+
+Completed
+
+In Progress
+
+Not Started
+
+Draft
+
+Hidden
+
+Published
+
+Students should understand status without reading long text.
+
+20. Empty States
+
+Whenever data is unavailable, meaningful empty states should be displayed.
+
+Example:
+
+"No Notes Available"
+
+instead of an empty screen.
+
+21. Loading States
+
+The application should always display loading placeholders while fetching data.
+
+Students should never see blank pages.
+
+22. Search Experience
+
+Search should be available globally.
+
+Students should quickly search:
+
+Subjects
+
+Chapters
+
+Resources
+
+Future versions may include filters.
+
+23. Mobile Responsiveness
+
+The platform should be mobile-first.
+
+Every screen should work smoothly on:
+
+Mobile
+
+Tablet
+
+Desktop
+
+Navigation should remain simple across all devices.
+
+24. Accessibility
+
+Buttons should be easily clickable.
+
+Text should remain readable.
+
+Contrast should remain high.
+
+Spacing should prevent accidental clicks.
+
+25. Admin Design Philosophy
+
+The Admin CMS should feel like Notion.
+
+It should focus on productivity instead of appearance.
+
+Administrators should perform content management quickly.
+
+26. CMS Principles
+
+Everything editable.
+
+Nothing hardcoded.
+
+Everything configurable.
+
+Everything manageable.
+
+27. Future Design Expansion
+
+The design system should support future features including:
+
+Battle Mode
+
+Leaderboard
+
+Planner
+
+Mock Tests
+
+Community
+
+AI Features
+
+without redesigning the application.
+
+28. Design Rules
+
+Do not overload screens.
+
+Do not use unnecessary animations.
+
+Do not display excessive information.
+
+Always prioritize clarity.
+
+Maintain consistent spacing.
+
+Maintain consistent colors.
+
+Maintain consistent typography.
+
+29. Final Design Goal
+
+PrepFlow should feel calm.
+
+Students should feel focused.
+
+The interface should disappear, allowing learning to become the primary focus.
+
+30. Design Statement
+
+A good interface is one that students stop noticing because studying becomes effortless.

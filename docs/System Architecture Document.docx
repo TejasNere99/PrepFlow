@@ -1,0 +1,379 @@
+PrepFlow
+System Architecture Document
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+This document defines the overall software architecture of PrepFlow.
+
+The architecture is designed to be modular, scalable, maintainable, and future-ready.
+
+Every component should have a clear responsibility and remain loosely coupled.
+
+2. Architecture Overview
+
+PrepFlow follows a modern three-tier architecture.
+
+Student
+
+↓
+
+React Frontend
+
+↓
+
+Node.js + Express API
+
+↓
+
+MongoDB Atlas
+
+↓
+
+Supabase Storage
+
+All communication between frontend and database must happen through backend APIs.
+
+The frontend should never directly access MongoDB.
+
+3. High-Level Architecture
+                    Student
+                       │
+                       ▼
+              React Frontend
+                       │
+                REST API Calls
+                       │
+                       ▼
+            Node.js + Express Backend
+               │                │
+               │                │
+               ▼                ▼
+        MongoDB Atlas     Supabase Storage
+4. Frontend Responsibilities
+
+The frontend is responsible for:
+
+Rendering UI
+API Communication
+State Management
+Routing
+Authentication Handling
+Progress Display
+User Interaction
+
+The frontend must never contain business logic related to content management.
+
+5. Backend Responsibilities
+
+The backend is responsible for:
+
+Authentication
+Authorization
+Business Logic
+CRUD Operations
+File Upload
+Validation
+Progress Calculation
+Analytics Calculation
+API Responses
+6. Database Responsibilities
+
+MongoDB stores:
+
+Users
+Subjects
+Chapters
+Resources
+Progress
+Tags
+Resource Types
+
+MongoDB never stores actual PDF files.
+
+7. Storage Responsibilities
+
+Supabase Storage stores:
+
+PDFs
+Notes
+Formula Sheets
+Images
+Icons
+
+Only file URLs are stored in MongoDB.
+
+8. Data Flow
+
+Student opens chapter
+
+↓
+
+Frontend requests API
+
+↓
+
+Backend validates request
+
+↓
+
+MongoDB returns chapter data
+
+↓
+
+Backend formats response
+
+↓
+
+Frontend renders UI
+
+9. File Upload Flow
+
+Administrator uploads file
+
+↓
+
+Frontend sends file
+
+↓
+
+Backend validates file
+
+↓
+
+Supabase uploads file
+
+↓
+
+Supabase returns URL
+
+↓
+
+MongoDB stores URL
+
+↓
+
+Student accesses file
+
+10. Progress Flow
+
+Student completes resource
+
+↓
+
+Frontend sends completion request
+
+↓
+
+Backend updates Progress collection
+
+↓
+
+Backend recalculates progress
+
+↓
+
+Updated analytics returned
+
+↓
+
+Frontend refreshes UI
+
+11. Authentication Flow
+
+Administrator
+
+↓
+
+Login
+
+↓
+
+JWT Generated
+
+↓
+
+Token Stored
+
+↓
+
+Protected API Access
+
+↓
+
+Logout
+
+Future student authentication should follow the same architecture.
+
+12. Folder Structure Philosophy
+
+The project should follow a feature-based structure.
+
+Frontend and backend should remain independent.
+
+Each module should contain its own logic, routes, controllers, and services.
+
+Avoid placing unrelated code together.
+
+13. Frontend Structure
+
+Recommended modules:
+
+Authentication
+Dashboard
+Subjects
+Chapters
+Resources
+Analytics
+Search
+Settings
+Admin CMS
+
+Shared components should be reusable across modules.
+
+14. Backend Structure
+
+Recommended modules:
+
+Authentication
+Users
+Subjects
+Chapters
+Resources
+Progress
+Analytics
+Storage
+Search
+Admin
+
+Each module should include:
+
+Routes
+Controller
+Service
+Validation
+Model
+15. API Communication
+
+Frontend communicates only through REST APIs.
+
+Every request should include proper validation.
+
+Responses should follow a consistent structure.
+
+16. Error Handling
+
+Errors should be handled centrally.
+
+API responses should never expose internal server details.
+
+Meaningful messages should be returned.
+
+17. Validation
+
+Validation should occur in three stages:
+
+Frontend Validation
+
+↓
+
+Backend Validation
+
+↓
+
+Database Validation
+
+No invalid data should reach MongoDB.
+
+18. Scalability
+
+The architecture should support:
+
+Additional Exams
+More Subjects
+AI Modules
+Battle Mode
+Mock Tests
+Community Features
+
+without major restructuring.
+
+19. Security
+
+Only authenticated administrators can access CMS APIs.
+
+Students cannot access administrative endpoints.
+
+Sensitive configuration should remain inside environment variables.
+
+20. Performance
+
+The application should:
+
+Minimize API calls
+Use efficient database queries
+Avoid duplicate requests
+Load resources lazily where appropriate
+21. Reusability
+
+Every component should be reusable.
+
+Business logic should remain inside services.
+
+Controllers should remain lightweight.
+
+UI components should remain generic.
+
+22. Maintainability
+
+Every feature should remain isolated.
+
+Adding new features should not require modifying existing modules unnecessarily.
+
+23. Future Ready Architecture
+
+The architecture should allow easy integration of:
+
+AI Recommendations
+Battle Mode
+Leaderboards
+Notifications
+Revision Planner
+Community
+
+without redesigning the project.
+
+24. Architectural Principles
+Separation of Concerns
+Single Responsibility Principle
+Reusability
+Scalability
+Maintainability
+Data-Driven Design
+Modular Development
+25. Golden Rules
+
+Never hardcode content.
+
+Never access MongoDB directly from the frontend.
+
+Never store files inside MongoDB.
+
+Never duplicate business logic.
+
+Always keep modules independent.
+
+Always build for future scalability.
+
+26. Final Statement
+
+PrepFlow's architecture is designed to ensure long-term maintainability and scalability.
+
+The system prioritizes clean separation between presentation, business logic, data management, and content storage.
+
+This architecture allows the platform to grow without requiring major structural changes.

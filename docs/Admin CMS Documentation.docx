@@ -1,0 +1,422 @@
+PrepFlow
+Admin CMS Documentation
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+The Admin Content Management System (CMS) is designed to allow administrators to manage the complete PrepFlow platform without modifying source code.
+
+Every content update should happen through the Admin CMS.
+
+The administrator should never need to edit MongoDB documents manually or redeploy the application.
+
+2. Vision
+
+The Admin CMS should feel like using Notion instead of a database management tool.
+
+The focus should be on productivity, simplicity, and flexibility.
+
+3. Primary Objective
+
+Allow administrators to manage every aspect of the platform without writing code.
+
+Examples include:
+
+Adding Subjects
+Creating Chapters
+Uploading PDFs
+Managing Resources
+Creating Tags
+Managing Metadata
+Publishing Content
+
+Everything should happen through the dashboard.
+
+4. CMS Philosophy
+
+The administrator manages content.
+
+The developer manages features.
+
+Content updates should never require source code modifications.
+
+5. Authentication
+
+Only authenticated administrators can access the CMS.
+
+Students should never access admin pages.
+
+Admin routes should remain hidden from public navigation.
+
+6. Dashboard
+
+The dashboard should display:
+
+Total Subjects
+Total Chapters
+Total Resources
+Published Resources
+Draft Resources
+Recently Updated Content
+
+The dashboard should provide a quick overview of the platform.
+
+7. Subject Management
+
+The administrator should be able to:
+
+Create Subject
+Edit Subject
+Delete Subject
+Hide Subject
+Publish Subject
+Change Display Order
+8. Chapter Management
+
+The administrator should be able to:
+
+Create Chapter
+Edit Chapter
+Delete Chapter
+Hide Chapter
+Publish Chapter
+Reorder Chapters
+Assign Subject
+9. Resource Management
+
+Each chapter can contain multiple resources.
+
+The administrator should be able to:
+
+Add Resource
+Edit Resource
+Delete Resource
+Hide Resource
+Publish Resource
+Reorder Resources
+10. Supported Resource Types
+
+Initially:
+
+Playlist
+Notes
+Formula Sheet
+Previous Year Questions
+
+Future versions may include:
+
+Mock Tests
+Flashcards
+Mind Maps
+Assignments
+Books
+Quiz
+
+The system should support new resource types without frontend code changes.
+
+11. File Upload
+
+The administrator uploads files directly through the CMS.
+
+Supported files:
+
+PDF
+Images
+
+Files should automatically upload to Supabase Storage.
+
+The generated URL should automatically be stored inside MongoDB.
+
+The administrator should never manually copy storage URLs.
+
+12. Metadata Management
+
+Every chapter and resource supports optional metadata.
+
+Examples:
+
+Estimated Study Time
+
+Difficulty
+
+Teacher
+
+Importance
+
+Language
+
+Duration
+
+Metadata is completely optional.
+
+13. Dynamic Metadata
+
+The administrator should be able to create custom metadata fields.
+
+Example:
+
+Field Name
+
+Batch
+
+Value
+
+2027
+
+Another example:
+
+Field Name
+
+Expected Questions
+
+Value
+
+2-3
+
+The frontend should automatically display newly created metadata.
+
+No code changes should be required.
+
+14. Tags Management
+
+Administrators should create unlimited tags.
+
+Examples:
+
+High Weightage
+Beginner Friendly
+Important
+Conceptual
+Revision
+
+Tags should be reusable across chapters and resources.
+
+15. Visibility
+
+Every item should support visibility.
+
+Available states:
+
+Draft
+
+Published
+
+Hidden
+
+Students should only receive published content.
+
+16. Ordering
+
+Administrators should change ordering without writing code.
+
+Supported ordering:
+
+Subjects
+
+Chapters
+
+Resources
+
+Ordering methods:
+
+Drag & Drop
+
+Move Up
+
+Move Down
+
+17. Search
+
+The CMS should support searching by:
+
+Subject
+
+Chapter
+
+Resource
+
+Tag
+
+Teacher
+
+Metadata
+
+18. Filters
+
+The administrator should filter content by:
+
+Subject
+
+Status
+
+Resource Type
+
+Tags
+
+Teacher
+
+Publication Status
+
+19. Preview Mode
+
+The administrator should preview content exactly as students see it.
+
+Preview mode should never expose editing controls.
+
+20. Auto Save
+
+The CMS should automatically save changes whenever possible.
+
+Manual save should remain available.
+
+21. Version History
+
+Every content update should create a version.
+
+The administrator should be able to:
+
+View History
+
+Restore Previous Version
+
+Track Changes
+
+22. Audit Log
+
+Every modification should store:
+
+Created By
+
+Updated By
+
+Created At
+
+Updated At
+
+This improves accountability and debugging.
+
+23. Soft Delete
+
+Deleting content should not permanently remove it.
+
+Deleted content should move to Trash.
+
+The administrator can restore deleted items later.
+
+24. Bulk Operations
+
+The CMS should support:
+
+Bulk Delete
+
+Bulk Publish
+
+Bulk Hide
+
+Bulk Move
+
+Bulk Tag Assignment
+
+Future:
+
+CSV Import
+
+JSON Import
+
+25. Future Integrations
+
+The CMS should later support:
+
+Battle Questions
+
+Mock Tests
+
+AI Recommendations
+
+Announcements
+
+Planner Content
+
+Community Management
+
+without architectural changes.
+
+26. UI Principles
+
+The CMS should feel:
+
+Fast
+
+Simple
+
+Professional
+
+Organized
+
+Minimal
+
+Every action should require the fewest possible clicks.
+
+27. Golden Rules
+Rule 1
+
+No administrator should edit source code for content updates.
+
+Rule 2
+
+No administrator should manually edit MongoDB collections.
+
+Rule 3
+
+No administrator should manually upload storage URLs.
+
+Rule 4
+
+Everything should be editable.
+
+Rule 5
+
+Everything should be configurable.
+
+Rule 6
+
+Everything should be dynamic.
+
+Rule 7
+
+Everything should be reusable.
+
+Rule 8
+
+The CMS should remain scalable.
+
+28. Future Enhancements
+
+Future versions may include:
+
+Approval Workflow
+
+Multiple Administrators
+
+Role-Based Permissions
+
+Content Scheduling
+
+Automatic Resource Validation
+
+AI-assisted Content Entry
+
+Analytics Dashboard
+
+29. Final Statement
+
+The Admin CMS is the backbone of PrepFlow.
+
+A successful CMS ensures that platform growth happens through content management instead of software development.
+
+The administrator should focus on improving student learning rather than maintaining application code.

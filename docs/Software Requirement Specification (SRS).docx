@@ -1,0 +1,390 @@
+Software Requirement Specification (SRS)
+PrepFlow
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+The purpose of PrepFlow is to provide students with a structured learning platform where all study resources are organized chapter-wise, allowing students to focus on studying instead of searching for content.
+
+This document defines the functional and non-functional requirements of the system.
+
+2. Scope
+
+PrepFlow is a web-based learning platform designed primarily for Class 11, Class 12, and MHT CET students.
+
+The platform will provide:
+
+Structured learning roadmap
+Organized study resources
+Progress tracking
+Analytics
+Admin Content Management System (CMS)
+
+Future versions may support additional competitive examinations.
+
+3. User Roles
+3.1 Student
+
+A student can:
+
+Browse subjects
+Open chapters
+Access study resources
+Mark resources as completed
+Track overall progress
+View analytics
+Search chapters
+
+A student cannot:
+
+Add resources
+Edit resources
+Delete resources
+Modify platform content
+3.2 Administrator
+
+An administrator can:
+
+Login securely
+Manage subjects
+Manage chapters
+Manage resources
+Upload PDFs
+Hide or publish content
+Edit metadata
+Manage tags
+Reorder resources
+Preview student view
+
+The administrator should never need to modify source code to update platform content.
+
+4. Functional Requirements
+FR-1 User Authentication
+
+The system shall provide administrator authentication.
+
+Student authentication will be introduced in future versions.
+
+FR-2 Dashboard
+
+The dashboard shall display:
+
+Overall Progress
+Subject Progress
+Continue Learning
+Recently Opened Chapters
+Search
+Analytics
+FR-3 Subject Management
+
+The system shall support:
+
+Create Subject
+Edit Subject
+Delete Subject
+Hide Subject
+Publish Subject
+FR-4 Chapter Management
+
+The administrator shall be able to:
+
+Create Chapter
+Edit Chapter
+Delete Chapter
+Reorder Chapters
+Hide Chapter
+Publish Chapter
+FR-5 Resource Management
+
+Each chapter can contain multiple learning resources.
+
+Examples:
+
+Playlist
+Notes
+Formula Sheet
+Previous Year Questions
+
+Future resource types should be supported without changing application code.
+
+FR-6 Resource Completion
+
+Students shall be able to mark individual resources as completed.
+
+Completion should automatically update:
+
+Chapter Progress
+Subject Progress
+Overall Progress
+FR-7 Progress Tracking
+
+The platform shall calculate:
+
+Resource Progress
+
+↓
+
+Chapter Progress
+
+↓
+
+Subject Progress
+
+↓
+
+Overall Progress
+
+All progress values should update automatically.
+
+FR-8 Search
+
+Students shall be able to search by:
+
+Subject
+Chapter
+Resource Name
+
+Future search filters may include:
+
+Tags
+Teacher
+Difficulty
+FR-9 Analytics
+
+The platform shall provide:
+
+Overall Completion Percentage
+Circular Progress Indicator
+Subject-wise Progress
+Chapter Completion Status
+FR-10 File Upload
+
+The administrator shall upload files through the CMS.
+
+Files shall be stored in Supabase Storage.
+
+Only file URLs shall be stored inside MongoDB.
+
+FR-11 Metadata
+
+Every chapter and resource may contain optional metadata.
+
+Examples:
+
+Estimated Study Time
+Difficulty
+Teacher
+Duration
+Importance
+
+Metadata should remain completely optional.
+
+FR-12 Tags
+
+Administrators shall create custom tags.
+
+Examples:
+
+High Weightage
+Beginner
+Important
+Revision
+Must Do
+
+Tags should not be hardcoded.
+
+FR-13 Visibility
+
+Every subject, chapter and resource shall support:
+
+Draft
+Published
+Hidden
+
+Students should only view published content.
+
+FR-14 Ordering
+
+Administrators shall change display order without changing code.
+
+Resources should support:
+
+Drag and Drop
+Move Up
+Move Down
+5. Non Functional Requirements
+
+The platform should be:
+
+Fast
+
+Responsive
+
+Scalable
+
+Secure
+
+Simple
+
+Maintainable
+
+Mobile Friendly
+
+Easy to Use
+
+Future Ready
+
+6. Performance Requirements
+
+The system should:
+
+Load dashboards quickly.
+
+Load chapters efficiently.
+
+Support thousands of resources.
+
+Support future growth without architectural changes.
+
+7. Security Requirements
+
+Administrator pages should require authentication.
+
+Students should never access CMS pages.
+
+Uploaded files should be securely stored.
+
+Database should never expose sensitive information.
+
+8. Storage Requirements
+
+MongoDB Atlas shall store:
+
+Subjects
+Chapters
+Resources
+Users
+Progress
+Metadata
+
+Supabase Storage shall store:
+
+Notes
+PDFs
+Formula Sheets
+Images
+9. Architecture Requirements
+
+The application shall follow a client-server architecture.
+
+Frontend
+
+↓
+
+Backend API
+
+↓
+
+Database
+
+↓
+
+Storage
+
+Content must always be served through APIs.
+
+Frontend shall never contain hardcoded learning resources.
+
+10. Dynamic Content System
+
+All platform content must be dynamically loaded from the database.
+
+Administrators should update platform content without modifying source code.
+
+The frontend should automatically render new content received from the backend.
+
+11. Content Management Philosophy
+
+Every editable item should be manageable from the Admin CMS.
+
+Examples include:
+
+Subjects
+Chapters
+Resources
+Metadata
+Tags
+Visibility
+Display Order
+
+The administrator should never require Visual Studio Code for content updates.
+
+12. Future Scalability
+
+The architecture should support:
+
+Additional Subjects
+New Exams
+New Resource Types
+AI Features
+Battle Mode
+Leaderboards
+Community Features
+
+without requiring major structural changes.
+
+13. Design Philosophy
+
+Student Interface
+
+Minimal
+
+Simple
+
+Organized
+
+Distraction Free
+
+Admin Interface
+
+Powerful
+
+Flexible
+
+Content Focused
+
+Highly Configurable
+
+14. System Principles
+
+Everything should be data driven.
+
+Nothing should be hardcoded.
+
+Frontend should render data received from the backend.
+
+The backend should remain independent of frontend implementation.
+
+Content updates should happen through the Admin CMS.
+
+15. Acceptance Criteria
+
+The first version of PrepFlow shall be considered complete when:
+
+Students can browse all subjects.
+Students can open chapters.
+Students can access learning resources.
+Students can track progress.
+Students can view analytics.
+Administrators can manage all content.
+Administrators can upload files.
+Administrators can edit platform data without changing source code.
+The platform is responsive on desktop and mobile.
+16. Final Principle
+
+PrepFlow should allow students to focus on learning and administrators to focus on content, not code.

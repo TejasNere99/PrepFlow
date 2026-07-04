@@ -1,0 +1,547 @@
+PrepFlow
+API Design Document
+
+Version: v1.0
+
+Status: Draft
+
+Author: Tejas Nere
+
+1. Purpose
+
+This document defines all backend APIs required for PrepFlow.
+
+The API architecture follows REST principles and provides a consistent communication layer between the frontend and backend.
+
+Every response should follow a standardized structure.
+
+2. API Principles
+
+Every API should:
+
+Follow REST standards
+Return meaningful responses
+Validate input
+Handle errors gracefully
+Use consistent naming conventions
+Support future scalability
+3. Response Structure
+
+Every successful API should return:
+
+{
+    "success": true,
+    "message": "",
+    "data": {}
+}
+
+Every failed API should return:
+
+{
+    "success": false,
+    "message": "",
+    "error": {}
+}
+4. Authentication APIs
+Login
+
+POST
+
+/api/auth/login
+
+Purpose
+
+Administrator Login
+
+Logout
+
+POST
+
+/api/auth/logout
+
+Purpose
+
+Logout Current User
+
+Current User
+
+GET
+
+/api/auth/me
+
+Purpose
+
+Return Logged In User Information
+
+5. Subject APIs
+Get All Subjects
+
+GET
+
+/api/subjects
+
+Get Single Subject
+
+GET
+
+/api/subjects/:id
+
+Create Subject
+
+POST
+
+/api/subjects
+
+(Admin Only)
+
+Update Subject
+
+PUT
+
+/api/subjects/:id
+
+(Admin Only)
+
+Delete Subject
+
+DELETE
+
+/api/subjects/:id
+
+(Admin Only)
+
+6. Chapter APIs
+Get Chapters
+
+GET
+
+/api/chapters
+
+Get Chapter
+
+GET
+
+/api/chapters/:id
+
+Create Chapter
+
+POST
+
+/api/chapters
+
+(Admin)
+
+Update Chapter
+
+PUT
+
+/api/chapters/:id
+
+(Admin)
+
+Delete Chapter
+
+DELETE
+
+/api/chapters/:id
+
+(Admin)
+
+7. Resource APIs
+Get Resources
+
+GET
+
+/api/resources
+
+Get Resources By Chapter
+
+GET
+
+/api/resources/chapter/:chapterId
+
+Create Resource
+
+POST
+
+/api/resources
+
+(Admin)
+
+Update Resource
+
+PUT
+
+/api/resources/:id
+
+(Admin)
+
+Delete Resource
+
+DELETE
+
+/api/resources/:id
+
+(Admin)
+
+8. Upload APIs
+Upload File
+
+POST
+
+/api/upload
+
+Purpose
+
+Upload PDF or Image
+
+Storage
+
+Supabase
+
+Returns
+
+Public File URL
+
+9. Progress APIs
+Mark Resource Completed
+
+POST
+
+/api/progress/complete
+
+Remove Completion
+
+DELETE
+
+/api/progress/:resourceId
+
+Get Student Progress
+
+GET
+
+/api/progress
+
+Get Chapter Progress
+
+GET
+
+/api/progress/chapter/:chapterId
+
+Get Subject Progress
+
+GET
+
+/api/progress/subject/:subjectId
+
+10. Analytics APIs
+Dashboard Analytics
+
+GET
+
+/api/analytics/dashboard
+
+Returns
+
+Overall Progress
+
+Completed Resources
+
+Subject Progress
+
+Chapter Progress
+
+11. Search APIs
+
+GET
+
+/api/search
+
+Supports
+
+Subjects
+
+Chapters
+
+Resources
+
+Future
+
+Metadata
+
+Tags
+
+Teachers
+
+12. Tag APIs
+Create Tag
+
+POST
+
+/api/tags
+
+Get Tags
+
+GET
+
+/api/tags
+
+Update Tag
+
+PUT
+
+/api/tags/:id
+
+Delete Tag
+
+DELETE
+
+/api/tags/:id
+
+13. Resource Type APIs
+Create Resource Type
+
+POST
+
+/api/resource-types
+
+Get Resource Types
+
+GET
+
+/api/resource-types
+
+Update Resource Type
+
+PUT
+
+/api/resource-types/:id
+
+Delete Resource Type
+
+DELETE
+
+/api/resource-types/:id
+
+14. Metadata APIs
+
+Metadata remains dynamic.
+
+No fixed API per field.
+
+Generic endpoints:
+
+GET
+
+/api/metadata
+
+POST
+
+/api/metadata
+
+PUT
+
+/api/metadata/:id
+
+DELETE
+
+/api/metadata/:id
+
+15. Admin Dashboard APIs
+
+Dashboard Summary
+
+GET
+
+/api/admin/dashboard
+
+Returns:
+
+Subjects Count
+Chapters Count
+Resources Count
+Draft Count
+Published Count
+Recent Updates
+16. Visibility APIs
+
+Update Visibility
+
+PATCH
+
+/api/resources/:id/visibility
+
+Supported Values
+
+Draft
+
+Published
+
+Hidden
+
+17. Ordering APIs
+
+Update Display Order
+
+PATCH
+
+/api/resources/reorder
+
+PATCH
+
+/api/chapters/reorder
+
+PATCH
+
+/api/subjects/reorder
+
+18. Preview APIs
+
+Student Preview
+
+GET
+
+/api/admin/preview/:chapterId
+
+Used only inside CMS.
+
+19. Future APIs
+
+Battle Mode
+
+/api/battle
+
+Leaderboard
+
+/api/leaderboard
+
+Planner
+
+/api/planner
+
+Notifications
+
+/api/notifications
+
+Community
+
+/api/community
+
+20. Authorization Rules
+
+Student
+
+Can
+
+View Subjects
+View Chapters
+View Resources
+Update Own Progress
+
+Cannot
+
+Create
+Edit
+Delete Platform Content
+
+Administrator
+
+Can Access
+
+Every API
+
+21. Status Codes
+
+200
+
+Success
+
+201
+
+Created
+
+400
+
+Bad Request
+
+401
+
+Unauthorized
+
+403
+
+Forbidden
+
+404
+
+Not Found
+
+500
+
+Internal Server Error
+
+22. Validation Rules
+
+Every API should validate:
+
+Required Fields
+
+Invalid IDs
+
+File Types
+
+Permissions
+
+Duplicate Entries
+
+No invalid request should reach the database.
+
+23. Error Messages
+
+Errors should always be meaningful.
+
+Examples
+
+Subject Not Found
+
+Invalid Resource
+
+Unauthorized Access
+
+Upload Failed
+
+Chapter Already Exists
+
+24. Security
+
+Protected APIs require authentication.
+
+Admin APIs require administrator role.
+
+Tokens should never expose sensitive information.
+
+25. API Design Principles
+
+RESTful
+
+Simple
+
+Consistent
+
+Scalable
+
+Secure
+
+Reusable
+
+26. Future Scalability
+
+The API architecture should support future features without breaking existing endpoints.
+
+New modules should be added without modifying previous APIs.
+
+27. Final Statement
+
+PrepFlow APIs are designed to provide a clean, scalable, and maintainable communication layer between the frontend, backend, database, and storage systems.
+
+Every endpoint should remain modular, reusable, and future-ready.
