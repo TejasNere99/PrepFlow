@@ -1,5 +1,7 @@
+import SectionHeader from '../components/ui/SectionHeader.jsx';
+
 function NotFound() {
-  return <h1 className="text-3xl font-semibold">404</h1>;
+  return <SectionHeader description="The requested route does not exist." title="404" />;
 }
 
 export default NotFound;
