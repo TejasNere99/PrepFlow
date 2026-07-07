@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authRouter } from '../auth/routes/authRoutes.js';
 
 export const router = Router();
 
@@ -13,3 +14,5 @@ router.get('/health', (req, res) => {
     status: 'OK',
   });
 });
+
+router.use('/api/auth', authRouter);
