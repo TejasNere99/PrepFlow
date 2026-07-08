@@ -3,19 +3,33 @@ import { ApiError } from '../../utils/ApiError.js';
 import { verifyAuthToken } from '../../utils/jwt.js';
 
 const getBearerToken = (authorizationHeader) => {
-  if (!authorizationHeader?.startsWith('Bearer ')) {
+  if (!authorizationHeader) {
     return null;
   }
 
-  return authorizationHeader.split(' ')[1];
+  const parts = authorizationHeader.split(' ');
+  if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+    return parts[1];
+  }
+
+  return null;
 };
 
 export const authenticate = async (req, res, next) => {
   try {
-    const token = getBearerToken(req.headers.authorization) || req.cookies?.token;
+    let token = getBearerToken(req.headers.authorization) || req.cookies?.token;
 
     if (!token) {
       throw new ApiError(401, 'Authentication token is required');
+    }
+
+    // Strip surrounding quotes and whitespace if present
+    token = token.trim();
+    if (token.startsWith('"') && token.endsWith('"')) {
+      token = token.slice(1, -1);
+    }
+    if (token.startsWith("'") && token.endsWith("'")) {
+      token = token.slice(1, -1);
     }
 
     const payload = verifyAuthToken(token);
@@ -33,7 +47,8 @@ export const authenticate = async (req, res, next) => {
 
     next();
   } catch (error) {
-    if (error instanceof ApiError && error.statusCode >= 500) {
+    console.error('Authentication error:', error.message);
+    if (error instanceof ApiError) {
       return next(error);
     }
 
