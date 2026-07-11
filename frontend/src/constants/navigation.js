@@ -1,4 +1,4 @@
-import { BookOpen, FileText, LayoutDashboard, Settings, Tags } from 'lucide-react';
+import { BookOpen, FileText, FolderOpen, LayoutDashboard, Settings, Tags } from 'lucide-react';
 
 export const appNavigation = [
   {
@@ -15,6 +15,11 @@ export const appNavigation = [
     label: 'Subjects',
     path: '/subjects',
     icon: Tags,
+  },
+  {
+    label: 'Chapters',
+    path: '/chapters',
+    icon: FolderOpen,
   },
   {
     label: 'Resources',
