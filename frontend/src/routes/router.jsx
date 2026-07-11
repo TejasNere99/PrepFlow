@@ -4,6 +4,7 @@ import Login from '../pages/Login.jsx';
 import NotFound from '../pages/NotFound.jsx';
 import PlaceholderPage from '../pages/PlaceholderPage.jsx';
 import Sheets from '../pages/Sheets.jsx';
+import Subjects from '../pages/Subjects.jsx';
 import ProtectedLayout from '../layouts/ProtectedLayout.jsx';
 import PublicLayout from '../layouts/PublicLayout.jsx';
 
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'subjects',
-        element: <PlaceholderPage title="Subjects" />,
+        element: <Subjects />,
       },
       {
         path: 'resources',
