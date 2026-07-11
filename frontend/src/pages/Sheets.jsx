@@ -453,8 +453,27 @@ function Sheets() {
         isOpen={isFormModalOpen}
         onClose={() => setIsFormModalOpen(false)}
         title={selectedSheet ? 'Edit Sheet' : 'Create Sheet'}
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              onClick={() => setIsFormModalOpen(false)}
+              variant="secondary"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" form="sheet-form" disabled={isSubmitting}>
+              {isSubmitting
+                ? 'Saving...'
+                : selectedSheet
+                ? 'Save Changes'
+                : 'Create Sheet'}
+            </Button>
+          </div>
+        }
       >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
+        <form id="sheet-form" onSubmit={handleFormSubmit} className="space-y-4">
           {formErrors.submit && (
             <div className="rounded border border-red-900 bg-red-950/20 p-2.5 text-xs text-red-300">
               {formErrors.submit}
@@ -591,24 +610,6 @@ function Sheets() {
               </div>
             )}
           </div>
-
-          <div className="flex justify-end gap-3 pt-3 border-t border-zinc-800">
-            <Button
-              type="button"
-              onClick={() => setIsFormModalOpen(false)}
-              variant="secondary"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? 'Saving...'
-                : selectedSheet
-                ? 'Save Changes'
-                : 'Create Sheet'}
-            </Button>
-          </div>
         </form>
       </Modal>
 
@@ -617,22 +618,8 @@ function Sheets() {
         isOpen={isArchiveModalOpen}
         onClose={() => setIsArchiveModalOpen(false)}
         title="Archive Sheet"
-      >
-        <div className="space-y-4">
-          <div className="flex gap-3 text-sm text-zinc-300">
-            <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={18} />
-            <div>
-              Are you sure you want to archive sheet{' '}
-              <strong className="text-white">"{selectedSheet?.title}"</strong>?
-              This will perform a soft delete, updating its status to{' '}
-              <span className="font-mono text-xs bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded text-zinc-400">
-                ARCHIVED
-              </span>
-              .
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-3 border-t border-zinc-800">
+        footer={
+          <div className="flex justify-end gap-3">
             <Button
               onClick={() => setIsArchiveModalOpen(false)}
               variant="secondary"
@@ -647,6 +634,21 @@ function Sheets() {
             >
               {isSubmitting ? 'Archiving...' : 'Archive Sheet'}
             </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="flex gap-3 text-sm text-zinc-300">
+            <AlertTriangle className="text-amber-500 shrink-0 mt-0.5" size={18} />
+            <div>
+              Are you sure you want to archive sheet{' '}
+              <strong className="text-white">"{selectedSheet?.title}"</strong>?
+              This will perform a soft delete, updating its status to{' '}
+              <span className="font-mono text-xs bg-zinc-900 border border-zinc-800 px-1 py-0.5 rounded text-zinc-400">
+                ARCHIVED
+              </span>
+              .
+            </div>
           </div>
         </div>
       </Modal>
