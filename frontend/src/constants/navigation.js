@@ -3,32 +3,32 @@ import { BookOpen, FileText, FolderOpen, LayoutDashboard, Settings, Tags } from 
 export const appNavigation = [
   {
     label: 'Dashboard',
-    path: '/',
+    path: '/dashboard',
     icon: LayoutDashboard,
   },
   {
     label: 'Sheets',
-    path: '/sheets',
+    path: '/dashboard/sheets',
     icon: BookOpen,
   },
   {
     label: 'Subjects',
-    path: '/subjects',
+    path: '/dashboard/subjects',
     icon: Tags,
   },
   {
     label: 'Chapters',
-    path: '/chapters',
+    path: '/dashboard/chapters',
     icon: FolderOpen,
   },
   {
     label: 'Resources',
-    path: '/resources',
+    path: '/dashboard/resources',
     icon: FileText,
   },
   {
     label: 'Settings',
-    path: '/settings',
+    path: '/dashboard/settings',
     icon: Settings,
   },
 ];

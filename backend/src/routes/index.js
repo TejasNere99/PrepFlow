@@ -4,6 +4,7 @@ import { sheetRouter } from './sheetRoutes.js';
 import { subjectRouter } from './subjectRoutes.js';
 import { chapterRouter } from './chapterRoutes.js';
 import { resourceRouter } from './resourceRoutes.js';
+import { publicRouter } from './publicRoutes.js';
 
 export const router = Router();
 
@@ -24,3 +25,4 @@ router.use('/api/sheets', sheetRouter);
 router.use('/api/subjects', subjectRouter);
 router.use('/api/chapters', chapterRouter);
 router.use('/api/resources', resourceRouter);
+router.use('/api/public', publicRouter);

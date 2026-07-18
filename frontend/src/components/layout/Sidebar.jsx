@@ -13,7 +13,7 @@ function Sidebar({ isCollapsed, onToggle }) {
       )}
     >
       <div className="flex h-16 items-center justify-between border-b border-zinc-800 px-4">
-        <NavLink className="flex min-w-0 items-center gap-3" to="/">
+        <NavLink className="flex min-w-0 items-center gap-3" to="/dashboard">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-zinc-100 text-sm font-bold text-zinc-950">
             PF
           </span>

@@ -23,7 +23,7 @@ const generateUniqueSlug = async (title, sheetId, excludeId = null) => {
   let exists = true;
 
   while (exists) {
-    const query = { slug, sheetId };
+    const query = { slug };
     if (excludeId) {
       query._id = { $ne: excludeId };
     }

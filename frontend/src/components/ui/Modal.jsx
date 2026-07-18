@@ -41,17 +41,19 @@ function Modal({ children, footer, isOpen, onClose, title }) {
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    
-    // Auto focus the modal itself to start trap
-    if (modalRef.current) {
-      modalRef.current.focus();
-    }
 
     return () => {
       document.body.style.overflow = originalStyle;
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  // Auto focus the modal itself to start trap only when it opens
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.focus();
+    }
+  }, [isOpen]);
 
   if (!isOpen) {
     return null;

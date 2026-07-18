@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, Edit2, Plus, Trash2, ExternalLink } from 'lucide-react';
+import { FolderOpen, Edit2, Plus, Trash2 } from 'lucide-react';
 import Badge from '../components/ui/Badge.jsx';
 import Button from '../components/ui/Button.jsx';
 import Chip from '../components/ui/Chip.jsx';
@@ -7,7 +7,6 @@ import Input from '../components/ui/Input.jsx';
 import SectionHeader from '../components/ui/SectionHeader.jsx';
 import Textarea from '../components/ui/Textarea.jsx';
 
-import * as resourceService from '../services/resourceService.js';
 import * as chapterService from '../services/chapterService.js';
 import * as subjectService from '../services/subjectService.js';
 
@@ -19,74 +18,59 @@ import ErrorState from '../components/ui/ErrorState.jsx';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton.jsx';
 import ConfirmationDialog from '../components/ui/ConfirmationDialog.jsx';
 import CrudFormModal from '../components/ui/CrudFormModal.jsx';
-import CreatableSelect from '../components/ui/CreatableSelect.jsx';
 
 import { useCrud } from '../hooks/useCrud.js';
 import { useFilters } from '../hooks/useFilters.js';
 
-const RESOURCE_TYPE_SUGGESTIONS = [
-  'Playlist', 'Notes', 'Formula Sheet', 'PYQs', 'Reference Book', 'Cheat Sheet', 'Revision Notes'
-];
-
 const getInitialFormData = () => ({
   sheetId: '',
   subjectId: '',
-  chapterId: '',
   title: '',
   description: '',
-  resourceType: '',
-  url: '',
-  storageUrl: '',
   order: '',
   status: 'DRAFT',
   tagsInput: '',
   metadataList: [],
 });
 
-const mapItemToFormData = (res) => {
-  const chapterId = res.chapterId?._id || res.chapterId || '';
-  const subjectId = res.chapterId?.subjectId?._id || res.chapterId?.subjectId || '';
-  const sheetId = res.chapterId?.subjectId?.sheetId?._id || res.chapterId?.subjectId?.sheetId || '';
+const mapItemToFormData = (chapter) => {
+  const subjectId = chapter.subjectId?._id || chapter.subjectId || '';
+  const sheetId = chapter.subjectId?.sheetId?._id || chapter.subjectId?.sheetId || '';
 
   return {
     sheetId,
     subjectId,
-    chapterId,
-    title: res.title || '',
-    description: res.description || '',
-    resourceType: res.resourceType || '',
-    url: res.url || '',
-    storageUrl: res.storageUrl || '',
-    order: res.order !== undefined ? String(res.order) : '',
-    status: res.status || 'DRAFT',
-    tagsInput: (res.tags || []).join(', '),
-    metadataList: Object.entries(res.metadata || {}).map(([key, value]) => ({
+    title: chapter.title || '',
+    description: chapter.description || '',
+    order: chapter.order !== undefined ? String(chapter.order) : '',
+    status: chapter.status || 'DRAFT',
+    tagsInput: (chapter.tags || []).join(', '),
+    metadataList: Object.entries(chapter.metadata || {}).map(([key, value]) => ({
       key,
       value: String(value),
     })),
   };
 };
 
-export default function Resources() {
-  const filters = useFilters(true); // Cascades Sheets -> Subjects -> Chapters
+export default function Chapters() {
+  const filters = useFilters(true); // Cascades Sheets -> Subjects
   
-  // Separate Subjects/Chapters for Form to decouple from Main Filter
+  // Separate Subjects for Form to decouple from Main Filter
   const [formSubjects, setFormSubjects] = useState([]);
-  const [formChapters, setFormChapters] = useState([]);
 
   const crud = useCrud({
-    fetchDataFn: resourceService.getResources,
-    createFn: resourceService.createResource,
-    updateFn: resourceService.updateResource,
-    archiveFn: resourceService.archiveResource,
+    fetchDataFn: chapterService.getChapters,
+    createFn: chapterService.createChapter,
+    updateFn: chapterService.updateChapter,
+    archiveFn: chapterService.archiveChapter,
     getInitialFormData,
     mapItemToFormData,
   });
 
   // Fetch items whenever dependencies change
   useEffect(() => {
-    crud.fetchItems({ chapterId: filters.selectedChapterId });
-  }, [crud.activeTab, crud.debouncedSearch, filters.selectedChapterId]); // eslint-disable-line react-hooks/exhaustive-deps
+    crud.fetchItems({ subjectId: filters.selectedSubjectId });
+  }, [crud.activeTab, crud.debouncedSearch, filters.selectedSubjectId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Form Cascading
   useEffect(() => {
@@ -97,35 +81,13 @@ export default function Resources() {
     }
   }, [crud.formData.sheetId, crud.isFormModalOpen]);
 
-  useEffect(() => {
-    if (crud.formData.subjectId && crud.isFormModalOpen) {
-      loadFormChapters(crud.formData.subjectId);
-    } else if (crud.isFormModalOpen && !crud.formData.subjectId) {
-      setFormChapters([]);
-    }
-  }, [crud.formData.subjectId, crud.isFormModalOpen]);
-
   const loadFormSubjects = async (sheetId) => {
     try {
       const response = await subjectService.getSubjects({ page: 1, limit: 100, status: 'ACTIVE', sheetId, sort: 'order' });
       const data = response.data || [];
       setFormSubjects(data);
       crud.setFormData(prev => {
-        if (!data.some(s => s._id === prev.subjectId)) return { ...prev, subjectId: '', chapterId: '' };
-        return prev;
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const loadFormChapters = async (subjectId) => {
-    try {
-      const response = await chapterService.getChapters({ page: 1, limit: 100, status: 'ACTIVE', subjectId, sort: 'order' });
-      const data = response.data || [];
-      setFormChapters(data);
-      crud.setFormData(prev => {
-        if (!data.some(c => c._id === prev.chapterId)) return { ...prev, chapterId: '' };
+        if (!data.some(s => s._id === prev.subjectId)) return { ...prev, subjectId: '' };
         return prev;
       });
     } catch (err) {
@@ -153,37 +115,11 @@ export default function Resources() {
     });
   };
 
-  const isValidUrl = (urlStr) => {
-    try {
-      const parsed = new URL(urlStr);
-      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-    } catch (e) {
-      return false;
-    }
-  };
-
   const validateForm = () => {
     const errors = {};
     if (!crud.formData.sheetId) errors.sheetId = 'Sheet is required';
     if (!crud.formData.subjectId) errors.subjectId = 'Subject is required';
-    if (!crud.formData.chapterId) errors.chapterId = 'Chapter is required';
     if (!crud.formData.title.trim()) errors.title = 'Title is required';
-    if (!crud.formData.resourceType.trim()) errors.resourceType = 'Resource Type is required';
-    
-    const hasExternal = crud.formData.url.trim().length > 0;
-    const hasStorage = crud.formData.storageUrl.trim().length > 0;
-
-    if (!hasExternal && !hasStorage) {
-      errors.urls = 'At least one valid URL (External or Storage) is required';
-    }
-
-    if (hasExternal && !isValidUrl(crud.formData.url.trim())) {
-      errors.url = 'External URL is invalid';
-    }
-    
-    if (hasStorage && !isValidUrl(crud.formData.storageUrl.trim())) {
-      errors.storageUrl = 'Storage URL is invalid';
-    }
 
     const keys = crud.formData.metadataList.map((m) => m.key.trim());
     crud.formData.metadataList.forEach((m, i) => {
@@ -212,12 +148,9 @@ export default function Resources() {
     });
 
     const payload = {
-      chapterId: crud.formData.chapterId,
+      subjectId: crud.formData.subjectId,
       title: crud.formData.title.trim(),
       description: crud.formData.description.trim(),
-      resourceType: crud.formData.resourceType.trim(),
-      url: crud.formData.url.trim(),
-      storageUrl: crud.formData.storageUrl.trim(),
       status: crud.formData.status,
       tags,
       metadata,
@@ -226,13 +159,6 @@ export default function Resources() {
       payload.order = Number(crud.formData.order);
     }
     crud.handleSubmit(payload);
-  };
-
-  const handlePreview = (res) => {
-    const link = res.url || res.storageUrl;
-    if (link) {
-      window.open(link, '_blank');
-    }
   };
 
   const getStatusBadge = (status) => {
@@ -253,59 +179,54 @@ export default function Resources() {
     { key: 'order', label: 'Order', className: 'text-center font-mono text-zinc-400 w-16' },
     { 
       key: 'details', 
-      label: 'Title & Details', 
-      render: (res) => (
+      label: 'Chapter Details', 
+      render: (chapter) => (
         <div>
-          <div className="font-semibold text-zinc-100">{res.title}</div>
-          {res.description && (
-            <div className="mt-1 text-xs text-zinc-400 max-w-xs truncate">{res.description}</div>
+          <div className="font-semibold text-zinc-100">{chapter.title}</div>
+          <div className="mt-0.5 font-mono text-xs text-zinc-500">{chapter.slug}</div>
+          {chapter.description && (
+            <div className="mt-1 text-xs text-zinc-400 max-w-xs truncate">{chapter.description}</div>
           )}
         </div>
       )
     },
     { 
-      key: 'type', 
-      label: 'Resource Type', 
-      className: 'w-32',
-      render: (res) => (
-        <span className="inline-flex items-center rounded border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
-          {res.resourceType}
-        </span>
-      )
-    },
-    {
-      key: 'url',
-      label: 'URL',
-      className: 'max-w-xs',
-      render: (res) => (
-        <div className="truncate">
-          {res.url ? (
-            <div className="text-xs text-zinc-500 truncate" title={res.url}>Ext: {res.url}</div>
-          ) : null}
-          {res.storageUrl ? (
-            <div className="text-xs text-zinc-500 truncate" title={res.storageUrl}>Stor: {res.storageUrl}</div>
-          ) : null}
-        </div>
+      key: 'subject', 
+      label: 'Subject', 
+      render: (chapter) => (
+        chapter.subjectId ? (
+          <div className="text-zinc-300">{chapter.subjectId.title}</div>
+        ) : (
+          <div className="text-zinc-600 italic">No Subject</div>
+        )
       )
     },
     { 
       key: 'status', 
       label: 'Status', 
       className: 'w-24',
-      render: (res) => getStatusBadge(res.status)
+      render: (chapter) => getStatusBadge(chapter.status)
     },
     {
       key: 'tags',
-      label: 'Tags',
-      className: 'min-w-[120px]',
-      render: (res) => (
+      label: 'Tags & Metadata',
+      render: (chapter) => (
         <div className="space-y-1.5">
-          {res.tags && res.tags.length > 0 && (
+          {chapter.tags && chapter.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {res.tags.map(tag => (
+              {chapter.tags.map(tag => (
                 <Chip key={tag} className="border-zinc-800 bg-zinc-900/50 py-0 px-1.5 text-[10px]">
                   {tag}
                 </Chip>
+              ))}
+            </div>
+          )}
+          {chapter.metadata && Object.keys(chapter.metadata).length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {Object.entries(chapter.metadata).map(([k, v]) => (
+                <span key={k} className="inline-flex items-center rounded border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 text-[10px] text-zinc-400">
+                  <span className="font-medium text-zinc-500 mr-1">{k}:</span>{v}
+                </span>
               ))}
             </div>
           )}
@@ -315,17 +236,14 @@ export default function Resources() {
     {
       key: 'actions',
       label: 'Actions',
-      className: 'text-right w-32',
-      render: (res) => (
+      className: 'text-right w-28',
+      render: (chapter) => (
         <div className="flex justify-end gap-2">
-          <Button onClick={() => handlePreview(res)} size="icon" variant="ghost" title="Preview Resource">
-            <ExternalLink size={14} className="text-blue-400 hover:text-blue-300" />
-          </Button>
-          <Button onClick={() => crud.handleOpenEdit(res)} size="icon" variant="ghost" title="Edit Resource">
+          <Button onClick={() => crud.handleOpenEdit(chapter)} size="icon" variant="ghost" title="Edit Chapter">
             <Edit2 size={14} className="text-zinc-400 hover:text-white" />
           </Button>
-          {res.status !== 'ARCHIVED' && (
-            <Button onClick={() => crud.handleOpenArchive(res)} size="icon" variant="ghost" title="Archive Resource">
+          {chapter.status !== 'ARCHIVED' && (
+            <Button onClick={() => crud.handleOpenArchive(chapter)} size="icon" variant="ghost" title="Archive Chapter">
               <Trash2 size={14} className="text-red-400 hover:text-red-300" />
             </Button>
           )}
@@ -341,21 +259,20 @@ export default function Resources() {
           <Button 
             onClick={() => crud.handleOpenCreate({
               sheetId: filters.selectedSheetId,
-              subjectId: filters.selectedSubjectId,
-              chapterId: filters.selectedChapterId
+              subjectId: filters.selectedSubjectId
             })} 
             className="gap-2" 
-            disabled={!filters.selectedChapterId}
+            disabled={!filters.selectedSubjectId}
           >
-            <Plus size={16} /> Create Resource
+            <Plus size={16} /> Create Chapter
           </Button>
         }
-        description="Manage study resources like playlists, notes, and pyqs."
-        title="Resource Management"
+        description="Manage chapters under subjects."
+        title="Chapter Management"
       />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <SearchToolbar search={crud.search} onSearchChange={crud.setSearch} placeholder="Search resources...">
+        <SearchToolbar search={crud.search} onSearchChange={crud.setSearch} placeholder="Search chapters...">
           <select
             className="h-10 rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-200 outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-800"
             value={filters.selectedSheetId}
@@ -373,20 +290,11 @@ export default function Resources() {
             <option value="">{filters.selectedSheetId ? 'Select Subject' : 'Waiting on Sheet...'}</option>
             {filters.subjects.map(s => <option key={s._id} value={s._id}>{s.title}</option>)}
           </select>
-          <select
-            className="h-10 rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-200 outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-800 disabled:opacity-50"
-            value={filters.selectedChapterId}
-            onChange={(e) => filters.setSelectedChapterId(e.target.value)}
-            disabled={!filters.selectedSubjectId}
-          >
-            <option value="">{filters.selectedSubjectId ? 'Select Chapter' : 'Waiting on Subject...'}</option>
-            {filters.chapters.map(c => <option key={c._id} value={c._id}>{c.title}</option>)}
-          </select>
         </SearchToolbar>
         <StatusTabs activeValue={crud.activeTab} onChange={crud.setActiveTab} />
       </div>
 
-      <ErrorState error={crud.error} onRetry={() => crud.fetchItems({ chapterId: filters.selectedChapterId })} />
+      <ErrorState error={crud.error} onRetry={() => crud.fetchItems({ subjectId: filters.selectedSubjectId })} />
 
       {crud.loading && !crud.error && <LoadingSkeleton rows={5} />}
 
@@ -396,19 +304,18 @@ export default function Resources() {
           data={crud.items}
           emptyState={
             <EmptyState
-              icon={crud.activeTab === 'ARCHIVED' ? Trash2 : FileText}
-              title={crud.activeTab === 'ARCHIVED' ? 'No archived resources' : 'No resources found'}
+              icon={crud.activeTab === 'ARCHIVED' ? Trash2 : FolderOpen}
+              title={crud.activeTab === 'ARCHIVED' ? 'No archived chapters' : 'No chapters found'}
               description={crud.activeTab === 'all' 
-                ? "Start by creating resources within your selected chapter." 
-                : `There are no resources with status "${crud.activeTab}" matching your query.`
+                ? "Start by creating chapters within your selected subject." 
+                : `There are no chapters with status "${crud.activeTab}" matching your query.`
               }
-              actionLabel={crud.activeTab === 'all' ? "Create your first resource" : null}
+              actionLabel={crud.activeTab === 'all' ? "Create your first chapter" : null}
               actionIcon={Plus}
-              actionDisabled={!filters.selectedChapterId}
+              actionDisabled={!filters.selectedSubjectId}
               onAction={crud.activeTab === 'all' ? () => crud.handleOpenCreate({
                 sheetId: filters.selectedSheetId,
-                subjectId: filters.selectedSubjectId,
-                chapterId: filters.selectedChapterId
+                subjectId: filters.selectedSubjectId
               }) : null}
             />
           }
@@ -419,13 +326,13 @@ export default function Resources() {
       <CrudFormModal
         isOpen={crud.isFormModalOpen}
         onClose={() => crud.setIsFormModalOpen(false)}
-        title={crud.selectedItem ? 'Edit Resource' : 'Create Resource'}
+        title={crud.selectedItem ? 'Edit Chapter' : 'Create Chapter'}
         onSubmit={onSubmit}
         isSubmitting={crud.isSubmitting}
         submitError={crud.formErrors.submit}
         isEditMode={!!crud.selectedItem}
       >
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Sheet *</label>
             <select
@@ -453,80 +360,26 @@ export default function Resources() {
             </select>
             {crud.formErrors.subjectId && <p className="mt-1 text-xs text-red-400">{crud.formErrors.subjectId}</p>}
           </div>
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Chapter *</label>
-            <select
-              className="h-10 w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-200 outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-800 disabled:opacity-50"
-              value={crud.formData.chapterId}
-              onChange={(e) => crud.setFormData({ ...crud.formData, chapterId: e.target.value })}
-              disabled={!crud.formData.subjectId}
-              required
-            >
-              <option value="" disabled>Select</option>
-              {formChapters.map(c => <option key={c._id} value={c._id}>{c.title}</option>)}
-            </select>
-            {crud.formErrors.chapterId && <p className="mt-1 text-xs text-red-400">{crud.formErrors.chapterId}</p>}
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Title *</label>
-            <Input
-              placeholder="e.g. Intro to Logic Gates"
-              value={crud.formData.title}
-              onChange={(e) => crud.setFormData({ ...crud.formData, title: e.target.value })}
-              required
-            />
-            {crud.formErrors.title && <p className="mt-1 text-xs text-red-400">{crud.formErrors.title}</p>}
-          </div>
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Resource Type *</label>
-            <CreatableSelect
-              placeholder="Select or type custom..."
-              value={crud.formData.resourceType}
-              onChange={(val) => crud.setFormData({ ...crud.formData, resourceType: val })}
-              suggestions={RESOURCE_TYPE_SUGGESTIONS}
-              required
-            />
-            {crud.formErrors.resourceType && <p className="mt-1 text-xs text-red-400">{crud.formErrors.resourceType}</p>}
-          </div>
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Title *</label>
+          <Input
+            placeholder="e.g. Kinematics"
+            value={crud.formData.title}
+            onChange={(e) => crud.setFormData({ ...crud.formData, title: e.target.value })}
+            required
+          />
+          {crud.formErrors.title && <p className="mt-1 text-xs text-red-400">{crud.formErrors.title}</p>}
         </div>
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Description</label>
           <Textarea
-            placeholder="Brief description of the resource..."
+            placeholder="Brief description of the chapter..."
             value={crud.formData.description}
             onChange={(e) => crud.setFormData({ ...crud.formData, description: e.target.value })}
           />
-        </div>
-
-        <div className="rounded border border-zinc-800 p-3 bg-zinc-900/20 space-y-3">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">External URL</label>
-            <Input
-              placeholder="https://youtube.com/..."
-              value={crud.formData.url}
-              onChange={(e) => crud.setFormData({ ...crud.formData, url: e.target.value })}
-            />
-            {crud.formErrors.url && <p className="mt-1 text-xs text-red-400">{crud.formErrors.url}</p>}
-          </div>
-          
-          <div className="flex items-center text-xs font-semibold uppercase tracking-wider text-zinc-500">
-            <span className="h-px bg-zinc-800 flex-1 mr-3" /> OR <span className="h-px bg-zinc-800 flex-1 ml-3" />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Storage URL</label>
-            <Input
-              placeholder="https://storage.supabase.com/..."
-              value={crud.formData.storageUrl}
-              onChange={(e) => crud.setFormData({ ...crud.formData, storageUrl: e.target.value })}
-            />
-            {crud.formErrors.storageUrl && <p className="mt-1 text-xs text-red-400">{crud.formErrors.storageUrl}</p>}
-          </div>
-          {crud.formErrors.urls && <p className="mt-1 text-xs text-red-400 text-center font-medium">{crud.formErrors.urls}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -556,7 +409,7 @@ export default function Resources() {
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Tags</label>
           <Input
-            placeholder="e.g. Video, Revision (comma-separated)"
+            placeholder="e.g. Mechanics (comma-separated)"
             value={crud.formData.tagsInput}
             onChange={(e) => crud.setFormData({ ...crud.formData, tagsInput: e.target.value })}
           />
@@ -610,14 +463,14 @@ export default function Resources() {
         isOpen={crud.isArchiveModalOpen}
         onClose={() => crud.setIsArchiveModalOpen(false)}
         onConfirm={crud.handleArchiveSubmit}
-        title="Archive Resource"
+        title="Archive Chapter"
         message={
           <>
-            Are you sure you want to archive resource <strong className="text-white">"{crud.selectedItem?.title}"</strong>?
+            Are you sure you want to archive chapter <strong className="text-white">"{crud.selectedItem?.title}"</strong>?
             This will perform a soft delete.
           </>
         }
-        confirmLabel="Archive Resource"
+        confirmLabel="Archive Chapter"
         isSubmitting={crud.isSubmitting}
       />
     </div>

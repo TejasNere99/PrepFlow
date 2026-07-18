@@ -9,10 +9,27 @@ import Chapters from '../pages/Chapters.jsx';
 import Resources from '../pages/Resources.jsx';
 import ProtectedLayout from '../layouts/ProtectedLayout.jsx';
 import PublicLayout from '../layouts/PublicLayout.jsx';
+import StudentLayout from '../layouts/StudentLayout.jsx';
+import StudentHome from '../pages/student/StudentHome.jsx';
+import StudentSheet from '../pages/student/StudentSheet.jsx';
 
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <StudentLayout />,
+    children: [
+      {
+        index: true,
+        element: <StudentHome />,
+      },
+      {
+        path: 'sheets/:sheetSlug',
+        element: <StudentSheet />,
+      },
+    ],
+  },
+  {
+    path: '/dashboard',
     element: <ProtectedLayout />,
     children: [
       {
@@ -39,10 +56,6 @@ export const router = createBrowserRouter([
         path: 'settings',
         element: <PlaceholderPage title="Settings" />,
       },
-      {
-        path: '*',
-        element: <NotFound />,
-      },
     ],
   },
   {
@@ -54,5 +67,9 @@ export const router = createBrowserRouter([
         element: <Login />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ]);

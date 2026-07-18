@@ -159,3 +159,11 @@ export const archiveSheet = async (id, userId) => {
 
   return await sheet.save();
 };
+
+export const getSheetBySlug = async (slug) => {
+  const sheet = await Sheet.findOne({ slug });
+  if (!sheet) {
+    throw new ApiError(404, 'Sheet not found');
+  }
+  return sheet;
+};
