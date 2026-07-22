@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
-import Dashboard from '../pages/Dashboard.jsx';
+import AdminDashboard from '../pages/AdminDashboard.jsx';
 import Login from '../pages/Login.jsx';
+import Signup from '../pages/Signup.jsx';
 import NotFound from '../pages/NotFound.jsx';
 import PlaceholderPage from '../pages/PlaceholderPage.jsx';
 import Sheets from '../pages/Sheets.jsx';
@@ -8,10 +9,14 @@ import Subjects from '../pages/Subjects.jsx';
 import Chapters from '../pages/Chapters.jsx';
 import Resources from '../pages/Resources.jsx';
 import ProtectedLayout from '../layouts/ProtectedLayout.jsx';
+import AdminLayout from '../layouts/AdminLayout.jsx';
 import PublicLayout from '../layouts/PublicLayout.jsx';
 import StudentLayout from '../layouts/StudentLayout.jsx';
 import StudentHome from '../pages/student/StudentHome.jsx';
 import StudentSheet from '../pages/student/StudentSheet.jsx';
+import RoleDashboardSwitcher from '../pages/student/RoleDashboardSwitcher.jsx';
+import ProfilePlaceholder from '../pages/student/ProfilePlaceholder.jsx';
+import RoleRoute from '../components/auth/RoleRoute.jsx';
 
 export const router = createBrowserRouter([
   {
@@ -34,27 +39,41 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <RoleDashboardSwitcher />,
       },
       {
-        path: 'sheets',
-        element: <Sheets />,
+        element: <RoleRoute allowedRoles={['ADMIN']} layout={AdminLayout} />,
+        children: [
+          {
+            path: 'sheets',
+            element: <Sheets />,
+          },
+          {
+            path: 'subjects',
+            element: <Subjects />,
+          },
+          {
+            path: 'chapters',
+            element: <Chapters />,
+          },
+          {
+            path: 'resources',
+            element: <Resources />,
+          },
+          {
+            path: 'settings',
+            element: <PlaceholderPage title="Settings" />,
+          },
+        ],
       },
       {
-        path: 'subjects',
-        element: <Subjects />,
-      },
-      {
-        path: 'chapters',
-        element: <Chapters />,
-      },
-      {
-        path: 'resources',
-        element: <Resources />,
-      },
-      {
-        path: 'settings',
-        element: <PlaceholderPage title="Settings" />,
+        element: <RoleRoute allowedRoles={['STUDENT']} layout={StudentLayout} />,
+        children: [
+          {
+            path: 'profile',
+            element: <ProfilePlaceholder />,
+          },
+        ],
       },
     ],
   },
@@ -65,6 +84,16 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Login />,
+      },
+    ],
+  },
+  {
+    path: '/signup',
+    element: <PublicLayout />,
+    children: [
+      {
+        index: true,
+        element: <Signup />,
       },
     ],
   },

@@ -11,7 +11,7 @@ import SectionHeader from '../components/ui/SectionHeader.jsx';
 import Tabs from '../components/ui/Tabs.jsx';
 import Textarea from '../components/ui/Textarea.jsx';
 
-function Dashboard() {
+function AdminDashboard() {
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -64,4 +64,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default AdminDashboard;

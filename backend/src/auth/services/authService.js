@@ -14,7 +14,7 @@ const sanitizeUser = (user) => ({
   updatedAt: user.updatedAt,
 });
 
-export const loginAdmin = async ({ email, password }) => {
+export const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email: normalizeEmail(email) }).select('+password');
 
   if (!user) {
@@ -36,6 +36,29 @@ export const loginAdmin = async ({ email, password }) => {
     user: sanitizeUser(user),
   };
 };
+
+export const registerStudent = async ({ name, email, password }) => {
+  const normalizedEmail = normalizeEmail(email);
+
+  const existingUser = await User.findOne({ email: normalizedEmail });
+  if (existingUser) {
+    throw new ApiError(400, 'User with this email already exists');
+  }
+
+  const user = await User.create({
+    name,
+    email: normalizedEmail,
+    password,
+    role: 'STUDENT',
+    isActive: true,
+  });
+
+  return {
+    token: generateAuthToken(user),
+    user: sanitizeUser(user),
+  };
+};
+
 
 export const getAuthenticatedUser = async (userId) => {
   const user = await User.findById(userId);
