@@ -177,6 +177,25 @@ export const getResourceById = async (id) => {
   return resource;
 };
 
+export const getResourceBySlug = async (slug) => {
+  const resource = await Resource.findOne({ slug, status: CONTENT_STATUS.ACTIVE }).populate({
+    path: 'chapterId',
+    select: 'title slug subjectId status',
+    populate: {
+      path: 'subjectId',
+      select: 'title slug sheetId status',
+      populate: {
+        path: 'sheetId',
+        select: 'title slug status'
+      }
+    }
+  });
+  if (!resource) {
+    throw new ApiError(404, 'Resource not found');
+  }
+  return resource;
+};
+
 export const updateResource = async (id, data) => {
   const resource = await Resource.findById(id);
   if (!resource) {

@@ -65,3 +65,14 @@ export const getPublicResourcesByChapterId = async (req, res) => {
     pagination: result.pagination,
   });
 };
+
+export const getResourceBySlug = async (req, res) => {
+  const { resourceSlug } = req.params;
+  const resource = await resourceService.getResourceBySlug(resourceSlug);
+
+  if (!resource || resource.status !== CONTENT_STATUS.ACTIVE) {
+    return res.status(404).json({ success: false, message: 'Resource not found' });
+  }
+  
+  sendSuccess(res, 200, 'Resource fetched successfully', resource);
+};

@@ -1,5 +1,6 @@
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useProgress } from '../../contexts/ProgressContext.jsx';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Circle } from 'lucide-react';
 
 function ResourceCard({ resource }) {
@@ -16,12 +17,10 @@ function ResourceCard({ resource }) {
     e.stopPropagation();
     await updateProgress(resource._id, !isCompleted);
   };
+  const navigate = useNavigate();
+
   const handleOpen = () => {
-    if (resource.url) {
-      window.open(resource.url, '_blank');
-    } else if (resource.storageUrl) {
-      window.open(resource.storageUrl, '_blank');
-    }
+    navigate(`/resources/${resource.slug}`);
   };
 
   return (

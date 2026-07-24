@@ -52,7 +52,21 @@ export const generateNextGoal = (stats) => {
   }
 
   // Look for a sheet near completion first
-  const nearComplete = stats.sheetsProgress.find(s => s.percentage > 0 && s.percentage < 100);
+  let activeSheets = stats.sheetsProgress.filter(s => s.percentage > 0 && s.percentage < 100);
+  
+  let nearComplete = null;
+  if (activeSheets.length > 0) {
+    if (stats.lastAccessedSheetId) {
+      // Prioritize the recently accessed sheet if it is active
+      nearComplete = activeSheets.find(s => s.id.toString() === stats.lastAccessedSheetId);
+    }
+    
+    if (!nearComplete) {
+      activeSheets.sort((a, b) => b.percentage - a.percentage); // Highest percentage first
+      nearComplete = activeSheets[0];
+    }
+  }
+
   if (nearComplete) {
     const nextPercent = Math.ceil((nearComplete.percentage + 0.1) / 25) * 25; // Next 25% boundary
     const targetPercentage = nextPercent > 100 ? 100 : nextPercent;

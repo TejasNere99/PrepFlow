@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import StudentHeader from '../components/student/StudentHeader.jsx';
 import StudentFooter from '../components/student/StudentFooter.jsx';
+import SearchOverlay from '../components/ui/SearchOverlay.jsx';
 
 function StudentLayout({ children }) {
   return (
@@ -12,6 +13,7 @@ function StudentLayout({ children }) {
         </div>
       </main>
       <StudentFooter />
+      <SearchOverlay />
     </div>
   );
 }

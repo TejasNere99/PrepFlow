@@ -11,6 +11,7 @@ import InsightCard from '../../components/student/InsightCard.jsx';
 import AchievementCard from '../../components/student/AchievementCard.jsx';
 import NextGoalCard from '../../components/student/NextGoalCard.jsx';
 import ContinueLearningCard from '../../components/student/ContinueLearningCard.jsx';
+import RecentlyViewedCard from '../../components/student/RecentlyViewedCard.jsx';
 import { BookOpen, CheckCircle, Target } from 'lucide-react';
 
 function StudentDashboard() {
@@ -126,6 +127,8 @@ function StudentDashboard() {
           <div className="h-64">
             <WeeklyActivityChart activity={weeklyActivity} />
           </div>
+
+          <RecentlyViewedCard />
 
         </div>
       </div>

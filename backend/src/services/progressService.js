@@ -108,16 +108,18 @@ export const getProgressSummary = async (userId) => {
     });
 
   let continueLearning = null;
+  let lastAccessedSheetId = null;
   if (lastAccessedProgress && lastAccessedProgress.resourceId) {
     const resource = lastAccessedProgress.resourceId;
     const chapter = resource.chapterId;
     const subject = chapter?.subjectId;
     const sheet = subject?.sheetId;
     if (sheet) {
+      lastAccessedSheetId = sheet._id.toString();
       continueLearning = {
         sheet: { id: sheet._id, title: sheet.title, slug: sheet.slug },
         chapter: { id: chapter._id, title: chapter.title },
-        resource: { id: resource._id, title: resource.title }
+        resource: { id: resource._id, title: resource.title, slug: resource.slug }
       };
     }
   }
@@ -244,7 +246,8 @@ export const getProgressSummary = async (userId) => {
     overallTotal,
     overallPercentage,
     completedThisWeek,
-    sheetsProgress: Object.values(sheetProgress)
+    sheetsProgress: Object.values(sheetProgress),
+    lastAccessedSheetId
   };
 
   const insights = generateInsights(engineStats);

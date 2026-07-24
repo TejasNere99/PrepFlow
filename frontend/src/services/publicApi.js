@@ -22,6 +22,11 @@ export const publicApi = {
     return response.data;
   },
 
+  getResourceBySlug: async (slug) => {
+    const response = await publicClient.get(`${PUBLIC_API_URL}/resources/${slug}`);
+    return response.data;
+  },
+
   getChapters: async (subjectId, params = {}) => {
     const response = await publicClient.get(`${PUBLIC_API_URL}/subjects/${subjectId}/chapters`, { params });
     return response.data;
@@ -31,4 +36,14 @@ export const publicApi = {
     const response = await publicClient.get(`${PUBLIC_API_URL}/chapters/${chapterId}/resources`, { params });
     return response.data;
   },
+
+  search: async (query) => {
+    const response = await publicClient.get(`${PUBLIC_API_URL}/search`, { params: { q: query } });
+    return response.data;
+  },
+
+  getRelatedResources: async (resourceId) => {
+    const response = await publicClient.get(`${PUBLIC_API_URL}/resources/${resourceId}/related`);
+    return response.data;
+  }
 };

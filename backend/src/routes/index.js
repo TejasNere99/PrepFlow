@@ -6,6 +6,7 @@ import { chapterRouter } from './chapterRoutes.js';
 import { resourceRouter } from './resourceRoutes.js';
 import { publicRouter } from './publicRoutes.js';
 import { progressRouter } from './progressRoutes.js';
+import { recentRouter } from './recentRoutes.js';
 
 export const router = Router();
 
@@ -28,3 +29,4 @@ router.use('/api/chapters', chapterRouter);
 router.use('/api/resources', resourceRouter);
 router.use('/api/public', publicRouter);
 router.use('/api/progress', progressRouter);
+router.use('/api/activity', recentRouter);
