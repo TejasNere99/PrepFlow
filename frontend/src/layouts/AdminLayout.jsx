@@ -4,7 +4,7 @@ import MobileSidebar from '../components/layout/MobileSidebar.jsx';
 import Sidebar from '../components/layout/Sidebar.jsx';
 import Topbar from '../components/layout/Topbar.jsx';
 
-function AdminLayout() {
+function AdminLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -17,7 +17,7 @@ function AdminLayout() {
           <Topbar onOpenSidebar={() => setIsMobileOpen(true)} />
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-7xl">
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </main>
         </div>

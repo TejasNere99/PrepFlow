@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { publicApi } from '../../services/publicApi.js';
 import ResourceCard from './ResourceCard.jsx';
+import ProgressBar from '../ui/ProgressBar.jsx';
 
-function ChapterAccordion({ chapter, searchQuery }) {
+function ChapterAccordion({ chapter, searchQuery, chapterProgress }) {
   const [isOpen, setIsOpen] = useState(false);
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -46,8 +47,13 @@ function ChapterAccordion({ chapter, searchQuery }) {
           {chapter.description && (
             <p className="mt-1 text-sm text-zinc-400">{chapter.description}</p>
           )}
+          {chapterProgress && (
+            <div className="mt-3 w-48">
+              <ProgressBar value={chapterProgress.percentage} size="sm" />
+            </div>
+          )}
         </div>
-        <div className="ml-4 flex items-center justify-center h-8 w-8 rounded-full bg-zinc-800 text-zinc-400">
+        <div className="ml-4 flex items-center justify-center h-8 w-8 rounded-full bg-zinc-800 text-zinc-400 shrink-0">
           <svg
             className={`h-5 w-5 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
             fill="none"

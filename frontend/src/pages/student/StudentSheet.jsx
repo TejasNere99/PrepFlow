@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { publicApi } from '../../services/publicApi.js';
+import { progressApi } from '../../services/progressApi.js';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+import { useProgress } from '../../contexts/ProgressContext.jsx';
 import ChapterAccordion from '../../components/student/ChapterAccordion.jsx';
+import ProgressBar from '../../components/ui/ProgressBar.jsx';
 
 function StudentSheet() {
+  const { user } = useAuth();
+  const { lastUpdated } = useProgress();
   const { sheetSlug } = useParams();
   const navigate = useNavigate();
   const [sheet, setSheet] = useState(null);
@@ -11,6 +17,7 @@ function StudentSheet() {
   const [activeSubjectId, setActiveSubjectId] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [progress, setProgress] = useState(null);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,6 +39,10 @@ function StudentSheet() {
         if (subjectsData.length > 0) {
           setActiveSubjectId(subjectsData[0]._id);
         }
+
+        if (user && user.role === 'STUDENT') {
+          // progress is fetched separately
+        }
       } catch (err) {
         setError('Failed to load sheet details.');
         console.error(err);
@@ -42,6 +53,20 @@ function StudentSheet() {
 
     fetchSheetData();
   }, [sheetSlug]);
+
+  useEffect(() => {
+    if (sheet && user && user.role === 'STUDENT') {
+      const fetchProgress = async () => {
+        try {
+          const progressRes = await progressApi.getSheetProgress(sheet._id);
+          setProgress(progressRes.data.data);
+        } catch (e) {
+          console.error('Failed to load progress', e);
+        }
+      };
+      fetchProgress();
+    }
+  }, [sheet, user, lastUpdated]);
 
   useEffect(() => {
     if (activeSubjectId) {
@@ -114,6 +139,11 @@ function StudentSheet() {
             </div>
           )}
         </div>
+        {progress?.sheetProgress && (
+          <div className="mt-6 max-w-md">
+            <ProgressBar value={progress.sheetProgress.percentage} label="Sheet Progress" />
+          </div>
+        )}
       </div>
 
       <hr className="my-8 border-zinc-800" />
@@ -133,7 +163,14 @@ function StudentSheet() {
                     : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200'
                 }`}
               >
-                {subject.title}
+                <div className="flex items-center gap-2">
+                  <span>{subject.title}</span>
+                  {progress?.subjectProgress && progress.subjectProgress[subject._id] && (
+                    <span className="text-xs text-zinc-500 bg-zinc-900 px-1.5 rounded-full">
+                      {progress.subjectProgress[subject._id].percentage}%
+                    </span>
+                  )}
+                </div>
               </button>
             ))}
             {subjects.length === 0 && (
@@ -166,6 +203,7 @@ function StudentSheet() {
                 key={chapter._id} 
                 chapter={chapter} 
                 searchQuery={searchQuery} 
+                chapterProgress={progress?.chapterProgress?.[chapter._id]}
               />
             ))}
             {chapters.length === 0 && (
