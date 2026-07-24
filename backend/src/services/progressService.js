@@ -4,6 +4,8 @@ import { Chapter } from '../models/Chapter.js';
 import { Subject } from '../models/Subject.js';
 import { Sheet } from '../models/Sheet.js';
 import { CONTENT_STATUS } from '../constants/contentStatus.js';
+import { evaluateAchievements } from './achievementsEngine.js';
+import { generateInsights, generateNextGoal } from './insightsEngine.js';
 
 export const upsertProgress = async (userId, resourceId, updateData) => {
   const { completed } = updateData;
@@ -160,6 +162,95 @@ export const getProgressSummary = async (userId) => {
 
   const overallPercentage = overallTotal > 0 ? Math.round((overallCompleted / overallTotal) * 100) : 0;
 
+  // Streak & Weekly Activity Calculation
+  const allAccessed = await ResourceProgress.find({ userId }).sort({ lastAccessedAt: 1 }).lean();
+  
+  const weeklyActivity = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+  const daysMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setHours(0, 0, 0, 0);
+  const day = startOfWeek.getDay();
+  startOfWeek.setDate(startOfWeek.getDate() - (day === 0 ? 6 : day - 1));
+
+  let completedThisWeek = 0;
+  
+  const uniqueStudyDays = new Set();
+  
+  allAccessed.forEach(p => {
+    if (p.lastAccessedAt) {
+      const accessedDate = new Date(p.lastAccessedAt);
+      uniqueStudyDays.add(accessedDate.toISOString().split('T')[0]);
+    }
+  });
+
+  allProgress.forEach(p => {
+    if (p.completedAt) {
+      const completedDate = new Date(p.completedAt);
+      if (completedDate >= startOfWeek) {
+        const dayName = daysMap[completedDate.getDay()];
+        if (weeklyActivity[dayName] !== undefined) {
+          weeklyActivity[dayName] += 1;
+          completedThisWeek += 1;
+        }
+      }
+    }
+  });
+
+  // Calculate Streak
+  const sortedDays = Array.from(uniqueStudyDays).sort().reverse();
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let currentRun = 0;
+  let lastStudyDate = sortedDays.length > 0 ? sortedDays[0] : null;
+
+  const todayStr = now.toISOString().split('T')[0];
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  let streakActive = false;
+  if (sortedDays.includes(todayStr) || sortedDays.includes(yesterdayStr)) {
+    streakActive = true;
+  }
+
+  for (let i = 0; i < sortedDays.length; i++) {
+    if (i === 0) {
+      currentRun = 1;
+    } else {
+      const d1 = new Date(sortedDays[i - 1]);
+      const d2 = new Date(sortedDays[i]);
+      const diffTime = Math.abs(d1 - d2);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 1) {
+        currentRun += 1;
+      } else {
+        currentRun = 1;
+      }
+    }
+    
+    if (streakActive && i < currentRun) {
+      currentStreak = currentRun;
+    }
+    if (currentRun > longestStreak) {
+      longestStreak = currentRun;
+    }
+  }
+
+  const engineStats = {
+    overallCompleted,
+    overallTotal,
+    overallPercentage,
+    completedThisWeek,
+    sheetsProgress: Object.values(sheetProgress)
+  };
+
+  const insights = generateInsights(engineStats);
+  const achievements = evaluateAchievements(engineStats);
+  const nextGoal = generateNextGoal(engineStats);
+
   return {
     continueLearning,
     overallProgress: {
@@ -168,6 +259,15 @@ export const getProgressSummary = async (userId) => {
       percentage: overallPercentage
     },
     sheetsProgress: Object.values(sheetProgress),
-    completedResources: allProgress.map(p => p.resourceId)
+    completedResources: allProgress.map(p => p.resourceId),
+    weeklyActivity,
+    streak: {
+      currentStreak,
+      longestStreak,
+      lastStudyDate
+    },
+    insights,
+    achievements,
+    nextGoal
   };
 };
