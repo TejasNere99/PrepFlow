@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../ui/Card.jsx';
+import DashboardCard from '../ui/DashboardCard';
 
 function StatCard({ title, value, subtitle, icon: Icon, color = 'indigo' }) {
   const colorClasses = {
@@ -11,10 +11,10 @@ function StatCard({ title, value, subtitle, icon: Icon, color = 'indigo' }) {
   };
 
   return (
-    <Card className="flex items-center gap-4">
+    <DashboardCard className="flex items-center gap-4">
       {Icon && (
-        <div className={`p-3 rounded-xl border ${colorClasses[color]}`}>
-          <Icon size={24} />
+        <div className={`p-2 rounded-lg border ${colorClasses[color]}`}>
+          <Icon size={20} strokeWidth={1.5} />
         </div>
       )}
       <div>
@@ -24,7 +24,7 @@ function StatCard({ title, value, subtitle, icon: Icon, color = 'indigo' }) {
           {subtitle && <span className="text-sm font-medium text-zinc-500">{subtitle}</span>}
         </div>
       </div>
-    </Card>
+    </DashboardCard>
   );
 }
 

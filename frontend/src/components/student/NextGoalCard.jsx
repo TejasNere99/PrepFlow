@@ -1,26 +1,23 @@
 import React from 'react';
-import Card from '../ui/Card.jsx';
+import DashboardCard from '../ui/DashboardCard';
 import { Compass } from 'lucide-react';
 
 function NextGoalCard({ nextGoal }) {
   if (!nextGoal) return null;
 
   return (
-    <Card className="border border-purple-500/30 bg-gradient-to-r from-zinc-900/80 to-purple-950/20 relative overflow-hidden">
-      <div className="absolute top-0 right-0 p-4 opacity-10">
-        <Compass size={100} />
-      </div>
+    <DashboardCard className="relative overflow-hidden">
       <div className="relative z-10 flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-purple-500/20 text-purple-400 shrink-0">
-          <Compass size={24} />
+        <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 shrink-0">
+          <Compass size={20} strokeWidth={1.5} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-purple-400 mb-1">Next Goal</h3>
-          <p className="text-lg font-bold text-zinc-100 mb-1">{nextGoal.title}</p>
-          <p className="text-sm text-zinc-300">{nextGoal.message}</p>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1">Next Goal</h3>
+          <p className="text-sm font-medium text-zinc-200 mb-1">{nextGoal.title}</p>
+          <p className="text-xs text-zinc-500">{nextGoal.message}</p>
         </div>
       </div>
-    </Card>
+    </DashboardCard>
   );
 }
 

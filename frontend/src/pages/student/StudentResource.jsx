@@ -2,14 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { publicApi } from '../../services/publicApi.js';
 import { progressApi } from '../../services/progressApi.js';
+import { studentService } from '../../services/studentService.js';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 import Breadcrumb from '../../components/ui/Breadcrumb.jsx';
+import ResourceActions from '../../components/student/actions/ResourceActions.jsx';
 import { ExternalLink, PlayCircle } from 'lucide-react';
 
 function StudentResource() {
   const { resourceSlug } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [resource, setResource] = useState(null);
   const [related, setRelated] = useState([]);
+  const [preferences, setPreferences] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,6 +37,16 @@ function StudentResource() {
             console.error('Failed to log activity', e);
           }
         }
+        // Fetch Preferences if user is logged in
+        if (user && resourceData._id) {
+          try {
+            const prefs = await studentService.getPreferences();
+            const myPref = prefs.find(p => p.resourceId === resourceData._id);
+            if (myPref) setPreferences(myPref);
+          } catch (e) {
+            console.error('Failed to fetch preferences', e);
+          }
+        }
       } catch (err) {
         console.error('Failed to fetch resource', err);
       } finally {
@@ -39,7 +54,7 @@ function StudentResource() {
       }
     };
     fetchResource();
-  }, [resourceSlug]);
+  }, [resourceSlug, user]);
 
   if (loading) return <div className="py-20 text-center text-zinc-500">Loading resource...</div>;
   if (!resource) return <div className="py-20 text-center text-zinc-500">Resource not found</div>;
@@ -59,6 +74,14 @@ function StudentResource() {
         <h1 className="text-3xl font-bold text-white mt-4">{resource.title}</h1>
         {resource.description && (
           <p className="mt-2 text-zinc-400">{resource.description}</p>
+        )}
+        
+        {user && resource && (
+          <ResourceActions 
+            resourceId={resource._id}
+            preferences={preferences}
+            onPreferenceChange={(newPrefs) => setPreferences(prev => ({...prev, ...newPrefs}))}
+          />
         )}
       </div>
 

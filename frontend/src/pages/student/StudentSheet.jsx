@@ -4,6 +4,7 @@ import { publicApi } from '../../services/publicApi.js';
 import { progressApi } from '../../services/progressApi.js';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useProgress } from '../../contexts/ProgressContext.jsx';
+import { studentService } from '../../services/studentService.js';
 import ChapterAccordion from '../../components/student/ChapterAccordion.jsx';
 import ProgressBar from '../../components/ui/ProgressBar.jsx';
 
@@ -18,6 +19,7 @@ function StudentSheet() {
   const [chapters, setChapters] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [progress, setProgress] = useState(null);
+  const [preferences, setPreferences] = useState([]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,7 +66,18 @@ function StudentSheet() {
           console.error('Failed to load progress', e);
         }
       };
+      
+      const fetchPreferences = async () => {
+        try {
+          const prefs = await studentService.getPreferences();
+          setPreferences(prefs);
+        } catch (e) {
+          console.error('Failed to load preferences', e);
+        }
+      };
+
       fetchProgress();
+      fetchPreferences();
     }
   }, [sheet, user, lastUpdated]);
 
@@ -204,6 +217,18 @@ function StudentSheet() {
                 chapter={chapter} 
                 searchQuery={searchQuery} 
                 chapterProgress={progress?.chapterProgress?.[chapter._id]}
+                preferences={preferences}
+                onPreferenceChange={(newPref) => {
+                  setPreferences(prev => {
+                    const idx = prev.findIndex(p => p.resourceId === newPref.resourceId);
+                    if (idx >= 0) {
+                      const newArr = [...prev];
+                      newArr[idx] = { ...newArr[idx], ...newPref };
+                      return newArr;
+                    }
+                    return [...prev, { resourceId: newPref.resourceId, ...newPref }];
+                  });
+                }}
               />
             ))}
             {chapters.length === 0 && (

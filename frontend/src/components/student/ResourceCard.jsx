@@ -2,8 +2,9 @@ import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useProgress } from '../../contexts/ProgressContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Circle } from 'lucide-react';
+import ResourceActions from './actions/ResourceActions.jsx';
 
-function ResourceCard({ resource }) {
+function ResourceCard({ resource, preferences, onPreferenceChange }) {
   const { user } = useAuth();
   // Call useProgress only if user is logged in (use hook safely or conditionally use data)
   // Actually, hooks can't be called conditionally, so we call it always but it might return empty/null if user is not STUDENT.
@@ -24,8 +25,8 @@ function ResourceCard({ resource }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 transition-colors hover:bg-zinc-900/80">
-      <div className="flex-1">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4 transition-colors hover:bg-zinc-900/80 flex-wrap">
+      <div className="flex-1 min-w-[50%]">
         <div className="flex items-center gap-3 mb-2">
           <span className="rounded bg-indigo-500/10 px-2 py-0.5 text-xs font-semibold uppercase text-indigo-400 border border-indigo-500/20">
             {resource.resourceType || 'Resource'}
@@ -67,6 +68,17 @@ function ResourceCard({ resource }) {
           Open Resource
         </button>
       </div>
+
+      {/* Render Resource Actions below for logged in students */}
+      {user?.role === 'STUDENT' && (
+        <div className="w-full mt-4 col-span-full sm:col-span-2">
+          <ResourceActions 
+            resourceId={resource._id} 
+            preferences={preferences} 
+            onPreferenceChange={(newPrefs) => onPreferenceChange({ resourceId: resource._id, ...newPrefs })} 
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { publicApi } from '../../services/publicApi.js';
 import ResourceCard from './ResourceCard.jsx';
 import ProgressBar from '../ui/ProgressBar.jsx';
 
-function ChapterAccordion({ chapter, searchQuery, chapterProgress }) {
+function ChapterAccordion({ chapter, searchQuery, chapterProgress, preferences, onPreferenceChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,12 @@ function ChapterAccordion({ chapter, searchQuery, chapterProgress }) {
           ) : filteredResources.length > 0 ? (
             <div className="space-y-4">
               {filteredResources.map((resource) => (
-                <ResourceCard key={resource._id} resource={resource} />
+                <ResourceCard 
+                  key={resource._id} 
+                  resource={resource} 
+                  preferences={preferences?.find(p => p.resourceId === resource._id)}
+                  onPreferenceChange={onPreferenceChange}
+                />
               ))}
             </div>
           ) : (

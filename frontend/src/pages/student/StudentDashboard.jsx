@@ -12,6 +12,10 @@ import AchievementCard from '../../components/student/AchievementCard.jsx';
 import NextGoalCard from '../../components/student/NextGoalCard.jsx';
 import ContinueLearningCard from '../../components/student/ContinueLearningCard.jsx';
 import RecentlyViewedCard from '../../components/student/RecentlyViewedCard.jsx';
+import BookmarksCard from '../../components/student/dashboard/BookmarksCard.jsx';
+import FavoritesCard from '../../components/student/dashboard/FavoritesCard.jsx';
+import CollectionsCard from '../../components/student/dashboard/CollectionsCard.jsx';
+import UpcomingRevisionCard from '../../components/student/dashboard/UpcomingRevisionCard.jsx';
 import { BookOpen, CheckCircle, Target } from 'lucide-react';
 
 function StudentDashboard() {
@@ -98,6 +102,17 @@ function StudentDashboard() {
               </div>
             </div>
           )}
+
+          {/* Personal Workspace */}
+          <div className="space-y-4 pt-4 border-t border-zinc-800/50">
+            <h2 className="text-xl font-semibold text-zinc-100">Personal Workspace</h2>
+            <div className="grid gap-6 sm:grid-cols-2">
+              <CollectionsCard />
+              <UpcomingRevisionCard />
+              <BookmarksCard />
+              <FavoritesCard />
+            </div>
+          </div>
 
           {/* SECTION 5: Achievements */}
           <div className="space-y-4">

@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../ui/Card.jsx';
+import DashboardCard from '../ui/DashboardCard';
 import { Flame } from 'lucide-react';
 
 function StreakCard({ streak }) {
@@ -8,13 +8,7 @@ function StreakCard({ streak }) {
   const isActive = currentStreak > 0;
 
   return (
-    <Card className={`relative overflow-hidden border ${isActive ? 'border-orange-500/30' : 'border-zinc-800'}`}>
-      {isActive && (
-        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-          <Flame size={120} className="text-orange-500" />
-        </div>
-      )}
-      
+    <DashboardCard className={`relative overflow-hidden ${isActive ? 'border-orange-500/30 bg-orange-500/5' : ''}`}>
       <div className="flex items-start justify-between relative z-10">
         <div>
           <h3 className="text-lg font-semibold text-zinc-100 flex items-center gap-2">
@@ -40,7 +34,7 @@ function StreakCard({ streak }) {
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mt-1">Best</p>
         </div>
       </div>
-    </Card>
+    </DashboardCard>
   );
 }
 

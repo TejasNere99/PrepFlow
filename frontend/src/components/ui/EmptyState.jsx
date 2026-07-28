@@ -1,39 +1,18 @@
 import React from 'react';
-import Button from './Button.jsx';
 
-/**
- * Reusable EmptyState component
- */
-export default function EmptyState({ 
-  icon: Icon, 
-  title, 
-  description, 
-  actionLabel, 
-  onAction,
-  actionDisabled = false,
-  actionIcon: ActionIcon
-}) {
+const EmptyState = ({ icon: Icon, title, description, action }) => {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950/20 py-16 text-center transition-all">
+    <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
       {Icon && (
-        <div className="rounded-full bg-zinc-900 p-4 border border-zinc-800 text-zinc-500 mb-4">
-          <Icon size={32} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 border border-zinc-800 mb-3">
+          <Icon className="text-zinc-500" size={18} strokeWidth={1.5} />
         </div>
       )}
-      <h3 className="text-base font-semibold text-zinc-200">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-zinc-500">{description}</p>
-      
-      {actionLabel && onAction && (
-        <Button 
-          onClick={onAction} 
-          className="mt-4 gap-2" 
-          size="sm"
-          disabled={actionDisabled}
-        >
-          {ActionIcon && <ActionIcon size={14} />}
-          {actionLabel}
-        </Button>
-      )}
+      <h4 className="text-sm font-medium text-zinc-200">{title}</h4>
+      {description && <p className="mt-1 text-xs text-zinc-500 max-w-[200px]">{description}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
-}
+};
+
+export default EmptyState;

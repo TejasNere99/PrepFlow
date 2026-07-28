@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../ui/Card.jsx';
+import DashboardCard from '../ui/DashboardCard';
 import { Target, TrendingUp, Zap, Sparkles } from 'lucide-react';
 
 function InsightCard({ insight }) {
@@ -15,15 +15,15 @@ function InsightCard({ insight }) {
   };
 
   return (
-    <Card className="flex items-start gap-4 bg-zinc-900/50 hover:bg-zinc-900 transition-colors">
-      <div className="p-2 rounded-lg bg-zinc-800 shrink-0">
+    <DashboardCard className="flex items-start gap-4 hover:border-zinc-700 transition-colors cursor-default">
+      <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 shrink-0">
         {getIcon()}
       </div>
       <div>
         <h4 className="text-sm font-semibold text-zinc-200">{title}</h4>
         <p className="text-sm text-zinc-400 mt-1 leading-snug">{message}</p>
       </div>
-    </Card>
+    </DashboardCard>
   );
 }
 
