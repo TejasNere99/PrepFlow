@@ -38,6 +38,11 @@ const subjectSchema = new mongoose.Schema(
       default: 0,
       index: true,
     },
+    displayOrder: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
     status: {
       type: String,
       enum: Object.values(CONTENT_STATUS),
@@ -67,5 +72,6 @@ const subjectSchema = new mongoose.Schema(
 
 subjectSchema.index({ title: 'text' });
 subjectSchema.index({ sheetId: 1, order: 1 });
+subjectSchema.index({ sheetId: 1, displayOrder: 1 });
 
 export const Subject = mongoose.model('Subject', subjectSchema);

@@ -49,7 +49,7 @@ export function useCrud({
         page: 1,
         limit: 100,
         status: activeTab,
-        sort: 'order',
+        sort: 'displayOrder',
       };
       if (debouncedSearch.trim()) {
         defaultParams.search = debouncedSearch.trim();
@@ -128,6 +128,7 @@ export function useCrud({
 
   return {
     items,
+    setItems,
     loading,
     error,
     
@@ -148,6 +149,7 @@ export function useCrud({
     formErrors,
     setFormErrors,
     isSubmitting,
+    setIsSubmitting,
 
     fetchItems,
     handleOpenCreate,

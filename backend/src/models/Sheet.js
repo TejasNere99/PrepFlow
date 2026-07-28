@@ -34,6 +34,11 @@ const sheetSchema = new mongoose.Schema(
       default: 0,
       index: true,
     },
+    displayOrder: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: () => ({}),

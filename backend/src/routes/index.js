@@ -8,6 +8,7 @@ import { publicRouter } from './publicRoutes.js';
 import { progressRouter } from './progressRoutes.js';
 import { recentRouter } from './recentRoutes.js';
 import { studentRouter } from './studentRoutes.js';
+import { adminRouter } from './adminRoutes.js';
 
 export const router = Router();
 
@@ -32,3 +33,4 @@ router.use('/api/public', publicRouter);
 router.use('/api/progress', progressRouter);
 router.use('/api/activity', recentRouter);
 router.use('/api/student', studentRouter);
+router.use('/api/admin', adminRouter);

@@ -10,7 +10,6 @@ import Textarea from '../components/ui/Textarea.jsx';
 import * as subjectService from '../services/subjectService.js';
 
 import DataTable from '../components/ui/DataTable.jsx';
-import SearchToolbar from '../components/ui/SearchToolbar.jsx';
 import StatusTabs from '../components/ui/StatusTabs.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import ErrorState from '../components/ui/ErrorState.jsx';
@@ -20,6 +19,16 @@ import CrudFormModal from '../components/ui/CrudFormModal.jsx';
 
 import { useCrud } from '../hooks/useCrud.js';
 import { useFilters } from '../hooks/useFilters.js';
+
+import ReusableTableToolbar from '../components/admin/ReusableTableToolbar.jsx';
+import BulkActionToolbar from '../components/admin/BulkActionToolbar.jsx';
+import CSVImportModal from '../components/admin/CSVImportModal.jsx';
+import CloneDialog from '../components/admin/CloneDialog.jsx';
+import BulkTagsDialog from '../components/admin/BulkTagsDialog.jsx';
+import BulkMoveDialog from '../components/admin/BulkMoveDialog.jsx';
+import AdvancedFilterPanel from '../components/admin/AdvancedFilterPanel.jsx';
+import { adminService } from '../services/adminService.js';
+import { Copy } from 'lucide-react';
 
 const getInitialFormData = () => ({
   sheetId: '',
@@ -56,9 +65,103 @@ export default function Subjects() {
     mapItemToFormData,
   });
 
+  // Admin CMS State
+  const [selectedIds, setSelectedIds] = React.useState([]);
+  const [isImportOpen, setIsImportOpen] = React.useState(false);
+  const [isCloneOpen, setIsCloneOpen] = React.useState(false);
+  const [bulkActionType, setBulkActionType] = React.useState(null); // 'TAGS', 'MOVE'
+  const [itemToClone, setItemToClone] = React.useState(null);
+  const [isFiltersOpen, setIsFiltersOpen] = React.useState(false);
+  const [advFilters, setAdvFilters] = React.useState({ status: '', tags: '' });
+
   React.useEffect(() => {
     crud.fetchItems({ sheetId: filters.selectedSheetId });
-  }, [crud.activeTab, crud.debouncedSearch, filters.selectedSheetId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [crud.activeTab, crud.debouncedSearch, filters.selectedSheetId, advFilters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleBulkAction = async (action) => {
+    if (action === 'BULK_UPDATE_TAGS') return setBulkActionType('TAGS');
+    if (action === 'BULK_MOVE') return setBulkActionType('MOVE');
+
+    try {
+      await adminService.bulkAction('Subject', action, selectedIds);
+      setSelectedIds([]);
+      crud.fetchItems({ sheetId: filters.selectedSheetId });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const executeComplexBulkAction = async (payload) => {
+    try {
+      crud.setIsSubmitting(true);
+      const action = bulkActionType === 'TAGS' ? 'BULK_UPDATE_TAGS' : 'BULK_MOVE';
+      await adminService.bulkAction('Subject', action, selectedIds, payload);
+      setSelectedIds([]);
+      setBulkActionType(null);
+      crud.fetchItems({ sheetId: filters.selectedSheetId });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      crud.setIsSubmitting(false);
+    }
+  };
+
+  const handleImport = async (validatedRows) => {
+    try {
+      await adminService.executeImport('Subject', validatedRows, filters.selectedSheetId);
+      setIsImportOpen(false);
+      crud.fetchItems({ sheetId: filters.selectedSheetId });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleClone = async () => {
+    if (!itemToClone) return;
+    try {
+      crud.setIsSubmitting(true);
+      await adminService.clone('Subject', itemToClone._id);
+      setIsCloneOpen(false);
+      setItemToClone(null);
+      crud.fetchItems({ sheetId: filters.selectedSheetId });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      crud.setIsSubmitting(false);
+    }
+  };
+
+  const handleReorder = async (sourceIndex, destinationIndex) => {
+    const newFiltered = Array.from(filteredItems);
+    const [movedItem] = newFiltered.splice(sourceIndex, 1);
+    newFiltered.splice(destinationIndex, 0, movedItem);
+
+    const updates = newFiltered.map((item, index) => ({
+      id: item._id,
+      displayOrder: index + 1
+    }));
+
+    const oldItems = [...crud.items];
+    const newItems = oldItems.map(item => {
+      const update = updates.find(u => u.id === item._id);
+      return update ? { ...item, displayOrder: update.displayOrder } : item;
+    });
+    
+    newItems.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    crud.setItems(newItems);
+
+    try {
+      await adminService.reorder('Subject', updates);
+    } catch (err) {
+      console.error('Reorder failed:', err);
+      crud.setItems(oldItems);
+    }
+  };
+
+  const openClone = (item) => {
+    setItemToClone(item);
+    setIsCloneOpen(true);
+  };
 
   const handleMetadataChange = (index, field, val) => {
     const updated = [...crud.formData.metadataList];
@@ -140,7 +243,7 @@ export default function Subjects() {
   };
 
   const columns = [
-    { key: 'order', label: 'Order', className: 'text-center font-mono text-zinc-400 w-20' },
+    { key: 'displayOrder', label: 'Order', className: 'text-center font-mono text-zinc-400 w-20' },
     { 
       key: 'details', 
       label: 'Subject Details', 
@@ -200,11 +303,14 @@ export default function Subjects() {
     {
       key: 'actions',
       label: 'Actions',
-      className: 'text-right w-28',
+      className: 'text-right w-36',
       render: (subject) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-1">
           <Button onClick={() => crud.handleOpenEdit(subject)} size="icon" variant="ghost" title="Edit Subject">
             <Edit2 size={14} className="text-zinc-400 hover:text-white" />
+          </Button>
+          <Button onClick={() => openClone(subject)} size="icon" variant="ghost" title="Clone Subject">
+            <Copy size={14} className="text-zinc-400 hover:text-white" />
           </Button>
           {subject.status !== 'ARCHIVED' && (
             <Button onClick={() => crud.handleOpenArchive(subject)} size="icon" variant="ghost" title="Archive Subject">
@@ -216,27 +322,30 @@ export default function Subjects() {
     }
   ];
 
+  const filteredItems = crud.items.filter(item => {
+    if (advFilters.status && item.status !== advFilters.status) return false;
+    if (advFilters.tags) {
+      const searchTags = advFilters.tags.toLowerCase().split(',').map(t => t.trim());
+      const itemTags = (item.tags || []).map(t => t.toLowerCase());
+      if (!searchTags.some(t => itemTags.includes(t))) return false;
+    }
+    return true;
+  });
+
+  const canReorder = !crud.search && crud.activeTab === 'all' && !advFilters.status && !advFilters.tags && filters.selectedSheetId;
+
   return (
     <div className="space-y-6">
       <SectionHeader
-        actions={
-          <Button 
-            onClick={() => crud.handleOpenCreate({ 
-              sheetId: filters.selectedSheetId || (filters.sheets.length > 0 ? filters.sheets[0]._id : '')
-            })} 
-            className="gap-2"
-          >
-            <Plus size={16} /> Create Subject
-          </Button>
-        }
         description="Manage study subjects under learning sheets."
         title="Subject Management"
       />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <SearchToolbar search={crud.search} onSearchChange={crud.setSearch} placeholder="Search subjects...">
+      <div className="flex flex-col gap-4 mb-4">
+        <div className="flex items-center gap-3 w-full max-w-sm">
+          <label className="text-sm text-zinc-400 whitespace-nowrap">Context:</label>
           <select
-            className="h-10 rounded-md border border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-200 outline-none focus:border-zinc-600 focus:ring-2 focus:ring-zinc-800"
+            className="h-10 w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 text-sm text-zinc-200 outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
             value={filters.selectedSheetId}
             onChange={(e) => filters.setSelectedSheetId(e.target.value)}
           >
@@ -245,7 +354,29 @@ export default function Subjects() {
               <option key={sheet._id} value={sheet._id}>{sheet.title}</option>
             ))}
           </select>
-        </SearchToolbar>
+        </div>
+        
+        <ReusableTableToolbar 
+          searchQuery={crud.search} 
+          onSearchChange={crud.setSearch}
+          onToggleFilters={() => setIsFiltersOpen(!isFiltersOpen)}
+          onAdd={() => crud.handleOpenCreate({ 
+            sheetId: filters.selectedSheetId || (filters.sheets.length > 0 ? filters.sheets[0]._id : '')
+          })}
+          onImport={() => setIsImportOpen(true)}
+          addLabel="Create Subject"
+          importLabel="Import Subjects"
+          isFiltersOpen={isFiltersOpen}
+        />
+
+        <AdvancedFilterPanel 
+          isOpen={isFiltersOpen}
+          onClose={() => setIsFiltersOpen(false)}
+          filters={advFilters}
+          onFilterChange={(k, v) => setAdvFilters({...advFilters, [k]: v})}
+          onClear={() => setAdvFilters({status: '', tags: ''})}
+        />
+
         <StatusTabs activeValue={crud.activeTab} onChange={crud.setActiveTab} />
       </div>
 
@@ -254,25 +385,31 @@ export default function Subjects() {
       {crud.loading && !crud.error && <LoadingSkeleton rows={5} />}
 
       {!crud.loading && !crud.error && (
-        <DataTable
-          columns={columns}
-          data={crud.items}
-          emptyState={
-            <EmptyState
-              icon={crud.activeTab === 'ARCHIVED' ? Trash2 : FolderOpen}
-              title={crud.activeTab === 'ARCHIVED' ? 'No archived subjects' : 'No subjects found'}
-              description={crud.activeTab === 'all' 
-                ? "Start by creating a subject for your learning sheets." 
-                : `There are no subjects with status "${crud.activeTab}" matching your query.`
-              }
-              actionLabel={crud.activeTab === 'all' ? "Create your first subject" : null}
-              actionIcon={Plus}
-              onAction={crud.activeTab === 'all' ? () => crud.handleOpenCreate({
-                sheetId: filters.selectedSheetId || (filters.sheets.length > 0 ? filters.sheets[0]._id : '')
-              }) : null}
-            />
-          }
-        />
+        <>
+          <DataTable
+            columns={columns}
+            data={filteredItems}
+            selectedIds={selectedIds}
+            onSelect={setSelectedIds}
+            onReorder={canReorder ? handleReorder : undefined}
+            emptyState={
+              <EmptyState
+                icon={crud.activeTab === 'ARCHIVED' ? Trash2 : FolderOpen}
+                title={crud.activeTab === 'ARCHIVED' ? 'No archived subjects' : 'No subjects found'}
+                description={crud.activeTab === 'all' 
+                  ? "Start by creating a subject for your learning sheets." 
+                  : `There are no subjects with status "${crud.activeTab}" matching your query.`
+                }
+                actionLabel={crud.activeTab === 'all' ? "Create your first subject" : null}
+                actionIcon={Plus}
+                onAction={crud.activeTab === 'all' ? () => crud.handleOpenCreate({
+                  sheetId: filters.selectedSheetId || (filters.sheets.length > 0 ? filters.sheets[0]._id : '')
+                }) : null}
+              />
+            }
+          />
+          <BulkActionToolbar selectedCount={selectedIds.length} onAction={handleBulkAction} />
+        </>
       )}
 
       {/* Create/Edit Modal */}
@@ -414,6 +551,39 @@ export default function Subjects() {
         }
         confirmLabel="Archive Subject"
         isSubmitting={crud.isSubmitting}
+      />
+
+      <CSVImportModal 
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={handleImport}
+        entityType="Subject"
+      />
+
+      <CloneDialog
+        isOpen={isCloneOpen}
+        onClose={() => {setIsCloneOpen(false); setItemToClone(null);}}
+        onConfirm={handleClone}
+        entityName={itemToClone?.title}
+        isSubmitting={crud.isSubmitting}
+      />
+
+      <BulkTagsDialog
+        isOpen={bulkActionType === 'TAGS'}
+        onClose={() => setBulkActionType(null)}
+        onConfirm={executeComplexBulkAction}
+        isSubmitting={crud.isSubmitting}
+        selectedCount={selectedIds.length}
+      />
+
+      <BulkMoveDialog
+        isOpen={bulkActionType === 'MOVE'}
+        onClose={() => setBulkActionType(null)}
+        onConfirm={executeComplexBulkAction}
+        isSubmitting={crud.isSubmitting}
+        selectedCount={selectedIds.length}
+        parentOptions={filters.sheets}
+        parentLabel="Sheet"
       />
     </div>
   );

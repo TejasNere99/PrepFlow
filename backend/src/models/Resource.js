@@ -61,6 +61,11 @@ const resourceSchema = new mongoose.Schema(
       default: 0,
       index: true,
     },
+    displayOrder: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: () => ({}),
@@ -83,5 +88,6 @@ const resourceSchema = new mongoose.Schema(
 
 resourceSchema.index({ title: 'text' });
 resourceSchema.index({ chapterId: 1, order: 1 });
+resourceSchema.index({ chapterId: 1, displayOrder: 1 });
 
 export const Resource = mongoose.model('Resource', resourceSchema);

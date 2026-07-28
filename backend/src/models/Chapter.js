@@ -33,6 +33,11 @@ const chapterSchema = new mongoose.Schema(
       default: 0,
       index: true,
     },
+    displayOrder: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
     status: {
       type: String,
       enum: Object.values(CONTENT_STATUS),
@@ -62,5 +67,6 @@ const chapterSchema = new mongoose.Schema(
 
 chapterSchema.index({ title: 'text' });
 chapterSchema.index({ subjectId: 1, order: 1 });
+chapterSchema.index({ subjectId: 1, displayOrder: 1 });
 
 export const Chapter = mongoose.model('Chapter', chapterSchema);

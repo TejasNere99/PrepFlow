@@ -106,7 +106,7 @@ export const getChapters = async ({ page = 1, limit = 10, search, status, subjec
   }
 
   // Sorting
-  let sortOption = { order: 1 };
+  let sortOption = { displayOrder: 1 };
   if (sort) {
     if (sort.startsWith('-')) {
       sortOption = { [sort.substring(1)]: -1 };

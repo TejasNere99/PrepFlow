@@ -9,7 +9,6 @@ import Textarea from '../components/ui/Textarea.jsx';
 import * as sheetService from '../services/sheetService.js';
 
 import DataTable from '../components/ui/DataTable.jsx';
-import SearchToolbar from '../components/ui/SearchToolbar.jsx';
 import StatusTabs from '../components/ui/StatusTabs.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import ErrorState from '../components/ui/ErrorState.jsx';
@@ -17,6 +16,15 @@ import LoadingSkeleton from '../components/ui/LoadingSkeleton.jsx';
 import ConfirmationDialog from '../components/ui/ConfirmationDialog.jsx';
 import CrudFormModal from '../components/ui/CrudFormModal.jsx';
 import { useCrud } from '../hooks/useCrud.js';
+
+import ReusableTableToolbar from '../components/admin/ReusableTableToolbar.jsx';
+import BulkActionToolbar from '../components/admin/BulkActionToolbar.jsx';
+import CSVImportModal from '../components/admin/CSVImportModal.jsx';
+import CloneDialog from '../components/admin/CloneDialog.jsx';
+import BulkTagsDialog from '../components/admin/BulkTagsDialog.jsx';
+import AdvancedFilterPanel from '../components/admin/AdvancedFilterPanel.jsx';
+import { adminService } from '../services/adminService.js';
+import { Copy } from 'lucide-react';
 
 const getInitialFormData = () => ({
   title: '',
@@ -49,10 +57,107 @@ export default function Sheets() {
     mapItemToFormData,
   });
 
+  // Admin CMS State
+  const [selectedIds, setSelectedIds] = React.useState([]);
+  const [isImportOpen, setIsImportOpen] = React.useState(false);
+  const [isCloneOpen, setIsCloneOpen] = React.useState(false);
+  const [bulkActionType, setBulkActionType] = React.useState(null); // 'TAGS' or null
+  const [itemToClone, setItemToClone] = React.useState(null);
+  const [isFiltersOpen, setIsFiltersOpen] = React.useState(false);
+  const [filters, setFilters] = React.useState({ status: '', tags: '' });
+
   // Fetch initial data
   React.useEffect(() => {
+    // Merge base search with advanced filters before calling fetch
     crud.fetchItems();
-  }, [crud.activeTab, crud.debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [crud.activeTab, crud.debouncedSearch, filters]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleBulkAction = async (action) => {
+    if (action === 'BULK_UPDATE_TAGS') {
+      setBulkActionType('TAGS');
+      return;
+    }
+    if (action === 'BULK_MOVE') return; // Sheets cannot be moved
+
+    try {
+      await adminService.bulkAction('Sheet', action, selectedIds);
+      setSelectedIds([]);
+      crud.fetchItems();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const executeComplexBulkAction = async (payload) => {
+    try {
+      crud.setIsSubmitting(true);
+      await adminService.bulkAction('Sheet', bulkActionType === 'TAGS' ? 'BULK_UPDATE_TAGS' : '', selectedIds, payload);
+      setSelectedIds([]);
+      setBulkActionType(null);
+      crud.fetchItems();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      crud.setIsSubmitting(false);
+    }
+  };
+
+  const handleImport = async (validatedRows) => {
+    try {
+      await adminService.executeImport('Sheet', validatedRows, null);
+      setIsImportOpen(false);
+      crud.fetchItems();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleClone = async () => {
+    if (!itemToClone) return;
+    try {
+      crud.setIsSubmitting(true);
+      await adminService.clone('Sheet', itemToClone._id);
+      setIsCloneOpen(false);
+      setItemToClone(null);
+      crud.fetchItems();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      crud.setIsSubmitting(false);
+    }
+  };
+
+  const handleReorder = async (sourceIndex, destinationIndex) => {
+    const newFiltered = Array.from(filteredItems);
+    const [movedItem] = newFiltered.splice(sourceIndex, 1);
+    newFiltered.splice(destinationIndex, 0, movedItem);
+
+    const updates = newFiltered.map((item, index) => ({
+      id: item._id,
+      displayOrder: index + 1
+    }));
+
+    const oldItems = [...crud.items];
+    const newItems = oldItems.map(item => {
+      const update = updates.find(u => u.id === item._id);
+      return update ? { ...item, displayOrder: update.displayOrder } : item;
+    });
+    
+    newItems.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    crud.setItems(newItems);
+
+    try {
+      await adminService.reorder('Sheet', updates);
+    } catch (err) {
+      console.error('Reorder failed:', err);
+      crud.setItems(oldItems);
+    }
+  };
+
+  const openClone = (item) => {
+    setItemToClone(item);
+    setIsCloneOpen(true);
+  };
 
   const handleMetadataChange = (index, field, val) => {
     const updated = [...crud.formData.metadataList];
@@ -132,7 +237,7 @@ export default function Sheets() {
   };
 
   const columns = [
-    { key: 'order', label: 'Order', className: 'text-center font-mono text-zinc-400 w-20' },
+    { key: 'displayOrder', label: 'Order', className: 'text-center font-mono text-zinc-400 w-20' },
     { 
       key: 'details', 
       label: 'Sheet Details', 
@@ -181,11 +286,14 @@ export default function Sheets() {
     {
       key: 'actions',
       label: 'Actions',
-      className: 'text-right w-28',
+      className: 'text-right w-36',
       render: (sheet) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-1">
           <Button onClick={() => crud.handleOpenEdit(sheet)} size="icon" variant="ghost" title="Edit Sheet">
             <Edit2 size={14} className="text-zinc-400 hover:text-white" />
+          </Button>
+          <Button onClick={() => openClone(sheet)} size="icon" variant="ghost" title="Clone Sheet">
+            <Copy size={14} className="text-zinc-400 hover:text-white" />
           </Button>
           {sheet.status !== 'ARCHIVED' && (
             <Button onClick={() => crud.handleOpenArchive(sheet)} size="icon" variant="ghost" title="Archive Sheet">
@@ -197,20 +305,46 @@ export default function Sheets() {
     }
   ];
 
+  // Client-side filtering for advanced filters
+  const filteredItems = crud.items.filter(item => {
+    if (filters.status && item.status !== filters.status) return false;
+    if (filters.tags) {
+      const searchTags = filters.tags.toLowerCase().split(',').map(t => t.trim());
+      const itemTags = (item.tags || []).map(t => t.toLowerCase());
+      if (!searchTags.some(t => itemTags.includes(t))) return false;
+    }
+    return true;
+  });
+
+  const canReorder = !crud.search && crud.activeTab === 'all' && !filters.status && !filters.tags;
+
   return (
     <div className="space-y-6">
       <SectionHeader
-        actions={
-          <Button onClick={() => crud.handleOpenCreate()} className="gap-2">
-            <Plus size={16} /> Create Sheet
-          </Button>
-        }
         description="Manage study sheets and structure resources."
         title="Sheet Management"
       />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <SearchToolbar search={crud.search} onSearchChange={crud.setSearch} placeholder="Search sheets by title..." />
+      <ReusableTableToolbar 
+        searchQuery={crud.search} 
+        onSearchChange={crud.setSearch}
+        onToggleFilters={() => setIsFiltersOpen(!isFiltersOpen)}
+        onAdd={() => crud.handleOpenCreate()}
+        onImport={() => setIsImportOpen(true)}
+        addLabel="Create Sheet"
+        importLabel="Import Sheets"
+        isFiltersOpen={isFiltersOpen}
+      />
+
+      <AdvancedFilterPanel 
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+        filters={filters}
+        onFilterChange={(k, v) => setFilters({...filters, [k]: v})}
+        onClear={() => setFilters({status: '', tags: ''})}
+      />
+
+      <div className="mb-4">
         <StatusTabs activeValue={crud.activeTab} onChange={crud.setActiveTab} />
       </div>
 
@@ -219,23 +353,29 @@ export default function Sheets() {
       {crud.loading && !crud.error && <LoadingSkeleton rows={5} />}
 
       {!crud.loading && !crud.error && (
-        <DataTable
-          columns={columns}
-          data={crud.items}
-          emptyState={
-            <EmptyState
-              icon={crud.activeTab === 'ARCHIVED' ? Trash2 : BookOpen}
-              title={crud.activeTab === 'ARCHIVED' ? 'No archived sheets' : 'No sheets found'}
-              description={crud.activeTab === 'all' 
-                ? "Start by creating a learning sheet to organize subjects and chapters." 
-                : `There are no sheets with status "${crud.activeTab}" matching your query.`
-              }
-              actionLabel={crud.activeTab === 'all' ? "Create your first sheet" : null}
-              actionIcon={Plus}
-              onAction={crud.activeTab === 'all' ? () => crud.handleOpenCreate() : null}
-            />
-          }
-        />
+        <>
+          <DataTable
+            columns={columns}
+            data={filteredItems}
+            selectedIds={selectedIds}
+            onSelect={setSelectedIds}
+            onReorder={canReorder ? handleReorder : undefined}
+            emptyState={
+              <EmptyState
+                icon={crud.activeTab === 'ARCHIVED' ? Trash2 : BookOpen}
+                title={crud.activeTab === 'ARCHIVED' ? 'No archived sheets' : 'No sheets found'}
+                description={crud.activeTab === 'all' 
+                  ? "Start by creating a learning sheet to organize subjects and chapters." 
+                  : `There are no sheets with status "${crud.activeTab}" matching your query.`
+                }
+                actionLabel={crud.activeTab === 'all' ? "Create your first sheet" : null}
+                actionIcon={Plus}
+                onAction={crud.activeTab === 'all' ? () => crud.handleOpenCreate() : null}
+              />
+            }
+          />
+          <BulkActionToolbar selectedCount={selectedIds.length} onAction={handleBulkAction} />
+        </>
       )}
 
       {/* Create/Edit Modal */}
@@ -358,6 +498,29 @@ export default function Sheets() {
         }
         confirmLabel="Archive Sheet"
         isSubmitting={crud.isSubmitting}
+      />
+
+      <CSVImportModal 
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={handleImport}
+        entityType="Sheet"
+      />
+
+      <CloneDialog
+        isOpen={isCloneOpen}
+        onClose={() => {setIsCloneOpen(false); setItemToClone(null);}}
+        onConfirm={handleClone}
+        entityName={itemToClone?.title}
+        isSubmitting={crud.isSubmitting}
+      />
+
+      <BulkTagsDialog
+        isOpen={bulkActionType === 'TAGS'}
+        onClose={() => setBulkActionType(null)}
+        onConfirm={executeComplexBulkAction}
+        isSubmitting={crud.isSubmitting}
+        selectedCount={selectedIds.length}
       />
     </div>
   );
