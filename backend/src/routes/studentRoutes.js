@@ -7,6 +7,8 @@ import { preferenceController } from '../controllers/preferenceController.js';
 import { noteController } from '../controllers/noteController.js';
 import { collectionController } from '../controllers/collectionController.js';
 import { revisionController } from '../controllers/revisionController.js';
+import * as learningController from '../controllers/learningController.js';
+import * as timelineController from '../controllers/timelineController.js';
 
 export const studentRouter = Router();
 
@@ -38,3 +40,10 @@ studentRouter.delete('/collections/:collectionId/items/:resourceId', collectionC
 studentRouter.get('/revision', revisionController.getUpcomingRevisions);
 studentRouter.post('/revision', revisionController.scheduleRevision);
 studentRouter.patch('/revision/:scheduleId', revisionController.updateRevisionStatus);
+
+// Smart Learning Intelligence (Sprint 17)
+studentRouter.get('/weak-topics', learningController.getWeakTopics);
+studentRouter.get('/recommendations', learningController.getRecommendations);
+studentRouter.get('/revision-priorities', learningController.getRevisionPriorities);
+studentRouter.get('/learning-insights', learningController.getLearningInsights);
+studentRouter.get('/timeline', timelineController.getTimeline);

@@ -15,7 +15,11 @@ import RecentlyViewedCard from '../../components/student/RecentlyViewedCard.jsx'
 import BookmarksCard from '../../components/student/dashboard/BookmarksCard.jsx';
 import FavoritesCard from '../../components/student/dashboard/FavoritesCard.jsx';
 import CollectionsCard from '../../components/student/dashboard/CollectionsCard.jsx';
-import UpcomingRevisionCard from '../../components/student/dashboard/UpcomingRevisionCard.jsx';
+import RevisionPriorityCard from '../../components/student/dashboard/RevisionPriorityCard.jsx';
+import RecommendationsCard from '../../components/student/dashboard/RecommendationsCard.jsx';
+import WeakTopicsCard from '../../components/student/dashboard/WeakTopicsCard.jsx';
+import LearningTimeline from '../../components/student/dashboard/LearningTimeline.jsx';
+import InsightsPanel from '../../components/student/dashboard/InsightsPanel.jsx';
 import { BookOpen, CheckCircle, Target } from 'lucide-react';
 
 function StudentDashboard() {
@@ -91,24 +95,29 @@ function StudentDashboard() {
             <NextGoalCard nextGoal={nextGoal} />
           </div>
 
-          {/* SECTION 2: Insights */}
-          {insights.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-zinc-100">Insights for You</h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {insights.map((insight, index) => (
-                  <InsightCard key={index} insight={insight} />
-                ))}
-              </div>
-            </div>
-          )}
+          {/* SECTION 2: Smart Recommendations */}
+          <div className="space-y-4">
+            <RecommendationsCard />
+          </div>
 
-          {/* Personal Workspace */}
+          {/* SECTION 3: Weak Topics */}
+          <div className="space-y-4">
+            <WeakTopicsCard />
+          </div>
+
+          {/* SECTION 4: Revision Priorities */}
+          <div className="space-y-4">
+            <RevisionPriorityCard />
+          </div>
+
+          {/* SECTION 5: Learning Insights */}
+          <InsightsPanel />
+
+          {/* Personal Workspace (Existing) */}
           <div className="space-y-4 pt-4 border-t border-zinc-800/50">
             <h2 className="text-xl font-semibold text-zinc-100">Personal Workspace</h2>
             <div className="grid gap-6 sm:grid-cols-2">
               <CollectionsCard />
-              <UpcomingRevisionCard />
               <BookmarksCard />
               <FavoritesCard />
             </div>
@@ -137,6 +146,11 @@ function StudentDashboard() {
           
           {/* SECTION 3: Streak */}
           <StreakCard streak={streak} />
+
+          {/* SECTION 6: Learning Timeline */}
+          <div className="space-y-4">
+            <LearningTimeline />
+          </div>
 
           {/* SECTION 4: Weekly Activity */}
           <div className="h-64">

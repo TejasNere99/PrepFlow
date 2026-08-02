@@ -74,14 +74,16 @@ export const generateNextGoal = (stats) => {
     if (targetPercentage === 100) {
       return {
         title: 'Finish Strong',
-        message: `Finish ${nearComplete.title}`
+        message: `Finish ${nearComplete.title}`,
+        url: `/sheets/${nearComplete.slug}`
       };
     } else {
       const needed = Math.ceil((targetPercentage / 100) * nearComplete.total) - nearComplete.completed;
       if (needed > 0) {
         return {
           title: 'Sheet Milestone',
-          message: `Complete ${needed} more resources in ${nearComplete.title}`
+          message: `Complete ${needed} more resources in ${nearComplete.title}`,
+          url: `/sheets/${nearComplete.slug}`
         };
       }
     }
@@ -93,13 +95,15 @@ export const generateNextGoal = (stats) => {
     if (needed > 0) {
       return {
         title: 'Overall Milestone',
-        message: `Complete ${needed} more resources to reach ${nextPercent}% overall progress`
+        message: `Complete ${needed} more resources to reach ${nextPercent}% overall progress`,
+        url: `/`
       };
     }
   }
 
   return {
     title: 'Keep Going',
-    message: 'Continue your learning journey.'
+    message: 'Continue your learning journey.',
+    url: `/`
   };
 };
