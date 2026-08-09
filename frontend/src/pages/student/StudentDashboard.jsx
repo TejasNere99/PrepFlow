@@ -20,6 +20,7 @@ import RecommendationsCard from '../../components/student/dashboard/Recommendati
 import WeakTopicsCard from '../../components/student/dashboard/WeakTopicsCard.jsx';
 import LearningTimeline from '../../components/student/dashboard/LearningTimeline.jsx';
 import InsightsPanel from '../../components/student/dashboard/InsightsPanel.jsx';
+import StudyPlanner from '../../components/student/planner/StudyPlanner.jsx';
 import { BookOpen, CheckCircle, Target } from 'lucide-react';
 
 function StudentDashboard() {
@@ -94,6 +95,9 @@ function StudentDashboard() {
             <ContinueLearningCard continueLearning={continueLearning} />
             <NextGoalCard nextGoal={nextGoal} />
           </div>
+
+          {/* SECTION 2: Intelligent Study Planner */}
+          <StudyPlanner />
 
           {/* SECTION 2: Smart Recommendations */}
           <div className="space-y-4">

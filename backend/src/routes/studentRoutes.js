@@ -9,6 +9,7 @@ import { collectionController } from '../controllers/collectionController.js';
 import { revisionController } from '../controllers/revisionController.js';
 import * as learningController from '../controllers/learningController.js';
 import * as timelineController from '../controllers/timelineController.js';
+import { studyPlannerRouter } from './studyPlannerRoutes.js';
 
 export const studentRouter = Router();
 
@@ -47,3 +48,6 @@ studentRouter.get('/recommendations', learningController.getRecommendations);
 studentRouter.get('/revision-priorities', learningController.getRevisionPriorities);
 studentRouter.get('/learning-insights', learningController.getLearningInsights);
 studentRouter.get('/timeline', timelineController.getTimeline);
+
+// Intelligent Study Planner (Sprint 18)
+studentRouter.use('/planner', studyPlannerRouter);
